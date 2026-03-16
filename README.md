@@ -17,9 +17,9 @@
 ## 🎨 Mockup Antarmuka
 Rancangan UI aplikasi yang berfokus pada pengalaman pengguna.
 
-| Login Page | Dashboard | Core Feature |
+| Login Page | Beranda | Absensi Kuliah |
 | :---: | :---: | :---: |
-| ![Login](assets/login.png) | ![Dash](assets/dash.png) | ![Feature](assets/feature.png) |
+| ![Login](Aset/login.png) | ![Dash](Aset/beranda.png) | ![Feature](Aset/absensi.png) |
 
 ---
 
