@@ -30,6 +30,24 @@ Rancangan UI aplikasi yang berfokus pada pengalaman pengguna.
 
 ---
 
+| Login Page 1 | Login Page 2 | Absensi |
+| :---: | :---: | :---: |
+| ![Login 1](s/1.png) | ![Login 2](s/2.png) | ![Absensi](s/absensi.png) |
+
+| Akun | Ambil Foto | Beranda |
+| :---: | :---: | :---: |
+| ![Akun](s/akun.png) | ![Ambil Foto](s/ambilfoto.png) | ![Beranda](s/beranda.png) |
+
+| Hadir | Semua | Tidak Hadir |
+| :---: | :---: | :---: |
+| ![Hadir](s/hadir.png) | ![Semua](s/semua.png) | ![Tidak Hadir](s/tidakhadir.png) |
+
+| Verifikasi Foto | Verifikasi Berhasil |
+| :---: | :---: |
+| ![Verifikasi Foto](s/verifikasifoto.png) | ![Verifikasi Berhasil](s/verifikasiberhasil.png) |
+
+---
+
 ## 📂 Cara Instalasi
 1. `git clone https://github.com/Raniahhasna98o6/Sistem-Absensi-Digital`
 2. `npm install`
