@@ -4,13 +4,19 @@
 
 ---
 
-## 📊 Perancangan Sistem (DFD)
+## 📊 Perancangan Sistem
 
 ### DFD Level 0
 ![DFD Level 0](DFD/DFD-Lv0-IMPAL.png)
 
 ### DFD Level 1
 ![DFD Level 1](DFD/DFD-Lv1-IMPAL.png)
+
+### ERD
+![ERD](ERD/ERD_revisi_last.jpeg)
+
+### CLASS DIAGRAM
+![Class Diagram](CLASS-DIAGRAM/IMPAL-CLASS-DIAGRAM-revisi-last.jpg)
 
 ---
 
