@@ -44,7 +44,7 @@ Rancangan UI aplikasi yang berfokus pada pengalaman pengguna.
 
 | Verifikasi Foto | Verifikasi Berhasil |
 | :---: | :---: |
-| ![Verifikasi Foto](s/verifikasifoto.png) | ![Verifikasi Berhasil](s/verifikasiberhasil.png) |
+| ![Verifikasi Foto](s/verfikasifoto.png) | ![Verifikasi Berhasil](s/verifikasiberhasil.png) |
 
 ---
 
