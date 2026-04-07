@@ -77,12 +77,12 @@ INSERT INTO Nilai (id_user, kode_mk, nilai_angka, nilai_index) VALUES
 INSERT INTO Absensi (id_user, kode_mk, tanggal_abs, status_abs, lokasi_abs) VALUES
 ('U01', 'MK01', '2024-05-20', 'Hadir', 'Gedung A - Lab 1'),
 ('U02', 'MK01', '2024-05-20', 'Hadir', 'Gedung A - Lab 1'),
-('U03', 'MK01', '2024-05-20', 'Izin', 'Rumah (Surat Terlampir)'),
+('U03', 'MK01', '2024-05-20', 'Hadir', 'Rumah (Surat Terlampir)'),
 ('U04', 'MK02', '2024-05-21', 'Hadir', 'Gedung B - Lab 2'),
-('U05', 'MK02', '2024-05-21', 'Sakit', 'Rumah'),
+('U05', 'MK02', '2024-05-21', 'Hadir', 'Rumah'),
 ('U06', 'MK03', '2024-05-22', 'Hadir', 'Gedung C - Ruang 3'),
 ('U07', 'MK03', '2024-05-22', 'Hadir', 'Gedung C - Ruang 3'),
-('U08', 'MK04', '2024-05-23', 'Alpha', 'Tidak Terdeteksi'),
+('U08', 'MK04', '2024-05-23', 'Hadir', 'Tidak Terdeteksi'),
 ('U09', 'MK04', '2024-05-23', 'Hadir', 'Gedung D - Ruang 4'),
 ('U10', 'MK05', '2024-05-24', 'Hadir', 'Gedung A - Lab AI');
 
