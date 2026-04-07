@@ -146,7 +146,7 @@ UPDATE Absensi
 SET status_abs = 'Izin', lokasi_abs = 'Keluarga Berduka (Verifikasi Susulan)' 
 WHERE status_abs = 'Alpha' AND kode_mk = 'MK04';
 
--- 10. mengubah semua menjadi sakit
+-- 10. Menandai lokasi absen sakit agar diverifikasi oleh admin
 UPDATE Absensi 
 SET lokasi_abs = CONCAT(IFNULL(lokasi_abs, ''), ' - Menunggu Verifikasi Admin') 
 WHERE status_abs = 'Sakit' AND tanggal_abs = '2024-05-21';
