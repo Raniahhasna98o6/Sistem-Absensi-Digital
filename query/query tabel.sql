@@ -58,7 +58,7 @@ CREATE TABLE Absensi(
     id_user VARCHAR(20),
     kode_mk VARCHAR(10),
     tanggal_abs DATE,
-    status_abs ENUM("Hadir", "Izin", "Sakit", "Alpha"),
+    status_abs ENUM("Hadir", "Tidak Hadir"),
     lokasi_abs VARCHAR(100),
     FOREIGN KEY (id_user) REFERENCES Mahasiswa(id_user),
     FOREIGN KEY (kode_mk) REFERENCES Mata_Kuliah(kode_mk)
