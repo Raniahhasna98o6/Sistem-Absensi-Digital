@@ -107,7 +107,7 @@ WHERE id_user = 'U08' AND kode_mk = 'MK04' AND tanggal_abs = '2024-05-23';
 
 -- 2. Mahasiswa U05 sudah mengirim surat dokter, status diubah dari Sakit ke Izin (prosedur kampus).
 UPDATE Absensi 
-SET status_abs = 'Izin', lokasi_abs = 'Rumah (Surat Dokter Terlampir)' 
+SET status_abs = 'Tidak Hadir', lokasi_abs = 'Rumah (Surat Dokter Terlampir)' 
 WHERE id_user = 'U05' AND kode_mk = 'MK02' AND tanggal_abs = '2024-05-21';
 
 -- 3. Mahasiswa U03 yang tadinya Izin, ternyata tetap masuk kelas (Hadir).
@@ -127,12 +127,12 @@ WHERE id_user = 'U09' AND kode_mk = 'MK04' AND tanggal_abs = '2024-05-23';
 
 -- 6. Mahasiswa U02 awalnya Hadir, tapi ketahuan titip absen (diubah ke Alpha).
 UPDATE Absensi 
-SET status_abs = 'Alpha', lokasi_abs = 'Diblokir (Pelanggaran Absensi)' 
+SET status_abs = 'Tidak Hadir', lokasi_abs = 'Diblokir (Pelanggaran Absensi)' 
 WHERE id_user = 'U02' AND kode_mk = 'MK01' AND tanggal_abs = '2024-05-20';
 
 -- 7. Update status mahasiswa U04 dari Hadir ke Sakit karena pulang di tengah perkuliahan.
 UPDATE Absensi 
-SET status_abs = 'Sakit', lokasi_abs = 'UKS Kampus' 
+SET status_abs = 'Tidak Hadir', lokasi_abs = 'UKS Kampus' 
 WHERE id_user = 'U04' AND kode_mk = 'MK02' AND tanggal_abs = '2024-05-21';
 
 
@@ -143,7 +143,7 @@ WHERE id_user = 'U07' AND kode_mk = 'MK03' AND tanggal_abs = '2024-05-22';
 
 -- 9. Mengubah status Alpha menjadi Izin karena mahasiswa memberikan alasan yang logis setelah kelas.
 UPDATE Absensi 
-SET status_abs = 'Izin', lokasi_abs = 'Keluarga Berduka (Verifikasi Susulan)' 
+SET status_abs = 'Tidak Hadir', lokasi_abs = 'Keluarga Berduka (Verifikasi Susulan)' 
 WHERE status_abs = 'Alpha' AND kode_mk = 'MK04';
 
 -- 10. Menandai lokasi absen sakit agar diverifikasi oleh admin
