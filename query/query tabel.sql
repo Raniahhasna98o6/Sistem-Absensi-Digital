@@ -19,24 +19,6 @@ CREATE TABLE Dosen(
     FOREIGN KEY (id_user) REFERENCES User(id_user)
 );
 
-CREATE TABLE KRS(
-    id_user VARCHAR(20),
-    kode_mk VARCHAR(10),
-    semester INT NOT NULL,
-    PRIMARY KEY (id_user, kode_mk),
-    FOREIGN KEY (id_user) REFERENCES Mahasiswa(id_user),
-    FOREIGN KEY (kode_mk) REFERENCES Mata_Kuliah(kode_mk)
-);
-
-CREATE TABLE Nilai(
-    id_user VARCHAR(20),
-    kode_mk VARCHAR(10),
-    nilai_angka DOUBLE,
-    nilai_index VARCHAR(2),
-    PRIMARY KEY (id_user, kode_mk),
-    FOREIGN KEY (id_user, kode_mk) REFERENCES KRS(id_user, kode_mk)
-);
-
 CREATE TABLE Ruangan(
     id_ruangan INT AUTO_INCREMENT PRIMARY KEY,
     nama_ruangan VARCHAR(50),
@@ -70,6 +52,26 @@ CREATE TABLE Laporan(
     periode VARCHAR(20),
 	FOREIGN KEY (id_user) REFERENCES User(id_user)
 );
+
+CREATE TABLE KRS(
+    id_user VARCHAR(20),
+    kode_mk VARCHAR(10),
+    semester INT NOT NULL,
+    PRIMARY KEY (id_user, kode_mk),
+    FOREIGN KEY (id_user) REFERENCES Mahasiswa(id_user),
+    FOREIGN KEY (kode_mk) REFERENCES Mata_Kuliah(kode_mk)
+);
+
+CREATE TABLE Nilai(
+    id_user VARCHAR(20),
+    kode_mk VARCHAR(10),
+    nilai_angka DOUBLE,
+    nilai_index VARCHAR(2),
+    PRIMARY KEY (id_user, kode_mk),
+    FOREIGN KEY (id_user, kode_mk) REFERENCES KRS(id_user, kode_mk)
+);
+
+
 
 SELECT * FROM User;
 SELECT * FROM Mahasiswa;
