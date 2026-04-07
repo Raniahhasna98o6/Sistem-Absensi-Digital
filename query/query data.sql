@@ -77,12 +77,12 @@ INSERT INTO Nilai (id_user, kode_mk, nilai_angka, nilai_index) VALUES
 INSERT INTO Absensi (id_user, kode_mk, tanggal_abs, status_abs, lokasi_abs) VALUES
 ('U01', 'MK01', '2024-05-20', 'Hadir', 'Gedung A - Lab 1'),
 ('U02', 'MK01', '2024-05-20', 'Hadir', 'Gedung A - Lab 1'),
-('U03', 'MK01', '2024-05-20', 'Hadir', 'Rumah (Surat Terlampir)'),
+('U03', 'MK01', '2024-05-20', 'Tidak Hadir', 'Rumah (Surat Terlampir)'),
 ('U04', 'MK02', '2024-05-21', 'Hadir', 'Gedung B - Lab 2'),
 ('U05', 'MK02', '2024-05-21', 'Hadir', 'Rumah'),
 ('U06', 'MK03', '2024-05-22', 'Hadir', 'Gedung C - Ruang 3'),
 ('U07', 'MK03', '2024-05-22', 'Hadir', 'Gedung C - Ruang 3'),
-('U08', 'MK04', '2024-05-23', 'Hadir', 'Tidak Terdeteksi'),
+('U08', 'MK04', '2024-05-23', 'Tidak Hadir', 'Tidak Terdeteksi'),
 ('U09', 'MK04', '2024-05-23', 'Hadir', 'Gedung D - Ruang 4'),
 ('U10', 'MK05', '2024-05-24', 'Hadir', 'Gedung A - Lab AI');
 
@@ -100,17 +100,17 @@ INSERT INTO Laporan (id_user, periode) VALUES
 ('U04', 'Juli 2024');
 
 -- update
--- 1. Mahasiswa U08 awalnya Alpha, Dosen memverifikasi karena masalah jaringan/GPS.
+-- 1. Mahasiswa U08 awalnya Tidak Hadir, Dosen memverifikasi karena masalah jaringan/GPS.
 UPDATE Absensi 
 SET status_abs = 'Hadir', lokasi_abs = 'Terverifikasi Dosen (Kendala GPS)' 
 WHERE id_user = 'U08' AND kode_mk = 'MK04' AND tanggal_abs = '2024-05-23';
 
--- 2. Mahasiswa U05 sudah mengirim surat dokter, status diubah dari Sakit ke Izin (prosedur kampus).
+-- 2. Mahasiswa U05 sudah mengirim surat dokter, status diubah dari Hadir ke Tidak Hadir (prosedur kampus).
 UPDATE Absensi 
 SET status_abs = 'Tidak Hadir', lokasi_abs = 'Rumah (Surat Dokter Terlampir)' 
 WHERE id_user = 'U05' AND kode_mk = 'MK02' AND tanggal_abs = '2024-05-21';
 
--- 3. Mahasiswa U03 yang tadinya Izin, ternyata tetap masuk kelas (Hadir).
+-- 3. Mahasiswa U03 yang tadinya Tidak Hadir, ternyata tetap masuk kelas (Hadir).
 UPDATE Absensi 
 SET status_abs = 'Hadir', lokasi_abs = 'Gedung A - Lab 1' 
 WHERE id_user = 'U03' AND kode_mk = 'MK01' AND tanggal_abs = '2024-05-20';
@@ -125,12 +125,12 @@ UPDATE Absensi
 SET lokasi_abs = 'Gedung D - Ruang 4 (Auto-Detect)' 
 WHERE id_user = 'U09' AND kode_mk = 'MK04' AND tanggal_abs = '2024-05-23';
 
--- 6. Mahasiswa U02 awalnya Hadir, tapi ketahuan titip absen (diubah ke Alpha).
+-- 6. Mahasiswa U02 awalnya Hadir, tapi ketahuan titip absen (diubah ke Tidak Hadir).
 UPDATE Absensi 
 SET status_abs = 'Tidak Hadir', lokasi_abs = 'Diblokir (Pelanggaran Absensi)' 
 WHERE id_user = 'U02' AND kode_mk = 'MK01' AND tanggal_abs = '2024-05-20';
 
--- 7. Update status mahasiswa U04 dari Hadir ke Sakit karena pulang di tengah perkuliahan.
+-- 7. Update status mahasiswa U04 dari Hadir ke Tidak Hadir karena pulang di tengah perkuliahan.
 UPDATE Absensi 
 SET status_abs = 'Tidak Hadir', lokasi_abs = 'UKS Kampus' 
 WHERE id_user = 'U04' AND kode_mk = 'MK02' AND tanggal_abs = '2024-05-21';
@@ -141,12 +141,12 @@ UPDATE Absensi
 SET lokasi_abs = 'Gedung C - Ruang 5 (Pindah Ruang)' 
 WHERE id_user = 'U07' AND kode_mk = 'MK03' AND tanggal_abs = '2024-05-22';
 
--- 9. Mengubah status Alpha menjadi Izin karena mahasiswa memberikan alasan yang logis setelah kelas.
+-- 9. Mengubah status Hadir menjadi Tidak Hadir karena mahasiswa memberikan alasan yang logis setelah kelas.
 UPDATE Absensi 
 SET status_abs = 'Tidak Hadir', lokasi_abs = 'Keluarga Berduka (Verifikasi Susulan)' 
-WHERE status_abs = 'Alpha' AND kode_mk = 'MK04';
+WHERE status_abs = 'Hadir' AND kode_mk = 'MK04';
 
--- 10. Menandai lokasi absen sakit agar diverifikasi oleh admin
+-- 10. Menandai lokasi absen Tidak Hadir agar diverifikasi oleh admin
 UPDATE Absensi 
 SET lokasi_abs = CONCAT(IFNULL(lokasi_abs, ''), ' - Menunggu Verifikasi Admin') 
-WHERE status_abs = 'Sakit' AND tanggal_abs = '2024-05-21';
+WHERE status_abs = 'Tidak Hadir' AND tanggal_abs = '2024-05-21';
