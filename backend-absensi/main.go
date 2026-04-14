@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend-absensi/config"
 	"backend-absensi/models"
 	"net/http"
 
@@ -8,8 +9,14 @@ import (
 )
 
 func main() {
+	config.ConnectDB()
 	r := gin.Default()
 	r.LoadHTMLGlob("template/*")
+
+	// endpoint test
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
+	})
 
 	// login page
 	r.GET("/", func(c *gin.Context) {
@@ -18,8 +25,7 @@ func main() {
 
 	// dashboard page
 	r.GET("/dashboard", func(c *gin.Context) {
-		login, _ := c.Cookie("login")
-		if login != "true" {
+		if !isLogin(c) {
 			c.Redirect(http.StatusFound, "/")
 			return
 		}
@@ -28,8 +34,7 @@ func main() {
 
 	// absensi page
 	r.GET("/absensi", func(c *gin.Context) {
-		login, _ := c.Cookie("login")
-		if login != "true" {
+		if !isLogin(c) {
 			c.Redirect(http.StatusFound, "/")
 			return
 		}
@@ -42,13 +47,26 @@ func main() {
 			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
+
 		var req LoginRequest
-		c.BindJSON(&req)
+		if err := c.BindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
+			return
+		}
 
-		user := models.NewUser("1", "Hasna", "admin@gmail.com", "admin123")
+		user, err := models.GetUserByEmail(req.Email)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"message": "Email atau password salah",
+			})
+			return
+		}
 
-		if user.Login(req.Email, req.Password) {
-			c.SetCookie("login", "true", 3600, "/", "", false, true)
+		if user.CheckPassword(req.Password) {
+			c.SetCookie("login", "true", 3600, "/", "localhost", false, true)
+			c.SetCookie("id_user", user.ID, 3600, "/", "localhost", false, true)
+
 			c.JSON(http.StatusOK, gin.H{
 				"success": true,
 				"message": "Login Berhasil",
@@ -64,21 +82,22 @@ func main() {
 	// logout
 	r.GET("/logout", func(c *gin.Context) {
 		c.SetCookie("login", "", -1, "/", "", false, true)
+		c.SetCookie("id_user", "", -1, "/", "", false, true)
 		c.Redirect(http.StatusFound, "/")
 	})
 
-	// API absensi
 	r.GET("/api/absensi", func(c *gin.Context) {
-		login, _ := c.Cookie("login")
-		if login != "true" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Unauthorized",
-			})
+		if !isLogin(c) {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"status": "Hadir",
-		})
+		idUser, _ := c.Cookie("id_user")
+		data, err := models.GetAbsensiByUser(idUser)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, data)
 	})
 
 	// API jadwal
@@ -89,6 +108,13 @@ func main() {
 			"ruang":  "TULT 0714",
 		})
 	})
-
 	r.Run(":8080")
+}
+
+func isLogin(c *gin.Context) bool {
+	login, err := c.Cookie("login")
+	if err != nil || login != "true" {
+		return false
+	}
+	return true
 }
