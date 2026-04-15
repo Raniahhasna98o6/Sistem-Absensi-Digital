@@ -1,24 +1,24 @@
 package models
+import "backend-absensi/config"
 
 type KRS struct {
-	semester    int
-	nilai_angka float64
-	nilai_index string
+	IDUser   string `json:"id_user"`
+	KodeMK   string `json:"kode_mk"`
+	Semester int    `json:"semester"`
 }
 
-func (k *KRS) AmbilMK(matkul MataKuliah) bool {
-	return true
-}
+func GetKRSByUser(id string) ([]KRS, error) {
+	rows, err := config.DB.Query("SELECT id_user, kode_mk, semester FROM KRS WHERE id_user = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-func (k *KRS) DropMK(matkul MataKuliah) bool {
-	return true
-}
-
-func (k *KRS) UpdateNilai(nilaiBaru float64) bool {
-	k.nilai_angka = nilaiBaru
-	return true
-}
-
-func (k *KRS) GetDetailKRS() KRS {
-	return *k
+	var list []KRS
+	for rows.Next() {
+		var k KRS
+		rows.Scan(&k.IDUser, &k.KodeMK, &k.Semester)
+		list = append(list, k)
+	}
+	return list, nil
 }
