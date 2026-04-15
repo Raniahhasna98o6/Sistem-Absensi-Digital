@@ -1,24 +1,24 @@
 package models
 import "backend-absensi/config"
 
-type Laporan struct {
-	IDLaporan int    `json:"id_laporan"`
-	IDUser    string `json:"id_user"`
-	Periode   string `json:"periode"`
+type KRS struct {
+	IDUser   string `json:"id_user"`
+	KodeMK   string `json:"kode_mk"`
+	Semester int    `json:"semester"`
 }
-func GetLaporan() ([]Laporan, error) {
-	rows, err := config.DB.Query("SELECT id_laporan, id_user, periode FROM Laporan")
+
+func GetKRSByUser(id string) ([]KRS, error) {
+	rows, err := config.DB.Query("SELECT id_user, kode_mk, semester FROM KRS WHERE id_user = ?", id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var list []Laporan
+	var list []KRS
 	for rows.Next() {
-		var l Laporan
-		rows.Scan(&l.IDLaporan, &l.IDUser, &l.Periode)
-		list = append(list, l)
+		var k KRS
+		rows.Scan(&k.IDUser, &k.KodeMK, &k.Semester)
+		list = append(list, k)
 	}
-
 	return list, nil
 }
