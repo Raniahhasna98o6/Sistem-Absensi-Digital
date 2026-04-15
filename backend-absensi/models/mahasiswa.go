@@ -1,32 +1,17 @@
 package models
+import "backend-absensi/config"
 
 type Mahasiswa struct {
-	User
-	nim string
+	IDUser string `json:"id_user"`
+	NIM    string `json:"nim"`
 }
+func GetMahasiswaByID(id string) (*Mahasiswa, error) {
+	var m Mahasiswa
+	query := "SELECT id_user, nim FROM Mahasiswa WHERE id_user = ?"
 
-// getter
-func (m *Mahasiswa) GetNIM() string {
-	return m.nim
-}
-
-// setter
-func (m *Mahasiswa) SetNIM(nim string) {
-	m.nim = nim
-}
-
-func (m *Mahasiswa) LihatJadwal() []MataKuliah {
-	return []MataKuliah{}
-}
-
-func (m *Mahasiswa) LakukanAbsensi(kode_mk string) Absensi {
-	return Absensi{}
-}
-
-func (m *Mahasiswa) LihatRiwayatAbsensi() []Absensi {
-	return []Absensi{}
-}
-
-func (m *Mahasiswa) LihatLaporan() Laporan {
-	return Laporan{}
+	err := config.DB.QueryRow(query, id).Scan(&m.IDUser, &m.NIM)
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
 }
