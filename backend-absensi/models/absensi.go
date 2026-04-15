@@ -1,33 +1,40 @@
 package models
-
-import "time"
+import "backend-absensi/config"
 
 type Absensi struct {
-	id_absensi int
-	tanggal    time.Time
-	status     string
-	lokasi     string
-	foto       string
+	IDAbsensi int    `json:"id_absensi"`
+	IDUser    string `json:"id_user"`
+	KodeMK    string `json:"kode_mk"`
+	Tanggal   string `json:"tanggal"`
+	Status    string `json:"status"`
+	Lokasi    string `json:"lokasi"`
 }
 
-// getter
-func (a *Absensi) GetStatus() string {
-	return a.status
+// insert absensi
+func InsertAbsensi(idUser, kodeMK, lokasi string) error {
+	query := `
+	INSERT INTO Absensi (id_user, kode_mk, tanggal_abs, status_abs, lokasi_abs)
+	VALUES (?, ?, CURDATE(), 'Hadir', ?)
+	`
+	_, err := config.DB.Exec(query, idUser, kodeMK, lokasi)
+	return err
 }
+// get absensi user
+func GetAbsensiByUser(id string) ([]Absensi, error) {
+	rows, err := config.DB.Query(`
+		SELECT id_absensi, id_user, kode_mk, tanggal_abs, status_abs, lokasi_abs
+		FROM Absensi WHERE id_user = ?
+	`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-// setter
-func (a *Absensi) SetStatus(status string) {
-	a.status = status
-}
-
-func (a *Absensi) SimpanAbsensi() bool {
-	return true
-}
-
-func (a *Absensi) UpdateStatus(status string) {
-	a.status = status
-}
-
-func (a *Absensi) ValidasiLokasi(lokasi string) bool {
-	return true
+	var list []Absensi
+	for rows.Next() {
+		var a Absensi
+		rows.Scan(&a.IDAbsensi, &a.IDUser, &a.KodeMK, &a.Tanggal, &a.Status, &a.Lokasi)
+		list = append(list, a)
+	}
+	return list, nil
 }
