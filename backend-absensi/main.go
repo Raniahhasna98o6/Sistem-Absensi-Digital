@@ -1,44 +1,26 @@
 package main
-
 import (
 	"backend-absensi/config"
 	"backend-absensi/models"
 	"net/http"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	config.ConnectDB()
 	r := gin.Default()
-	r.LoadHTMLGlob("template/*")
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowCredentials: true,
+	}))
 
 	// endpoint test
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
-	// login page
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "login.html", nil)
-	})
-
-	// dashboard page
-	r.GET("/dashboard", func(c *gin.Context) {
-		if !isLogin(c) {
-			c.Redirect(http.StatusFound, "/")
-			return
-		}
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-
-	// absensi page
-	r.GET("/absensi", func(c *gin.Context) {
-		if !isLogin(c) {
-			c.Redirect(http.StatusFound, "/")
-			return
-		}
-		c.HTML(http.StatusOK, "absensi.html", nil)
 	})
 
 	// login API
@@ -99,7 +81,6 @@ func main() {
 		}
 		c.JSON(http.StatusOK, data)
 	})
-
 	// API jadwal
 	r.GET("/get/jadwal", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
