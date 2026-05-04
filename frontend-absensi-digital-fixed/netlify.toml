@@ -1,0 +1,9 @@
+[build]
+  base = "frontend-absensi-digital-fixed"
+  publish = "frontend-absensi-digital-fixed/dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
