@@ -13,7 +13,8 @@ var DB *sql.DB
 func ConnectDB() {
 	// Ganti username dan password ini dengan kredensial Azure MySQL lu
 	// DSN format: username:password@tcp(host:port)/dbname
-	dsn := "sean:Bean2080!!!!@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true"
+	// Pastikan nama db_absensi ini benar, atau ganti jadi db_absensi_digital kalau di Azure namanya itu
+	dsn := "sean:Bean2080!!!!@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true&tls=skip-verify"
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
