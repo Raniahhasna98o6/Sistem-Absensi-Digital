@@ -1,78 +1,73 @@
 <template>
-    <div class="wrapper">
-      <div class="phone">
-        <div class="header">
-          <h2>Choose Role</h2>
-          <p>Please select your role to continue</p>
-          <p style="font-size: smaller;">Use the format below on your email</p>
+  <div class="wrapper">
+    <div class="phone">
+      <div class="header">
+        <h2>Choose Role</h2>
+        <p>Please select your role to continue</p>
+        <p style="font-size: smaller;">Use the format below on your email</p>
+      </div>
+
+      <!-- LOGO SEKSI -->
+      <div class="logo-wrapper">
+        <img :src="logo" class="logo" />
+      </div>
+      
+      <div class="content">
+        <!-- SELEKSI DOSEN -->
+        <div class="card" :class="{ 'selected': role === 'lecturer' }" @click="selectRole('lecturer')">
+          <h2 style="color: cadetblue;">Lecturer</h2>
+          <p>@lecturer.university.ac.id</p>
         </div>
 
-        <!-- LOGO -->
-        <div class="logo-wrapper">
-          <img :src="logo" class="logo" />
+        <!-- SELEKSI MAHASISWA -->
+        <div class="card" :class="{ 'selected': role === 'student' }" @click="selectRole('student')">
+          <h2 style="color: cadetblue;">Student</h2>
+          <p>@student.university.ac.id</p>
         </div>
-        
-        <div class="content">
 
-          <!-- Lecturer -->
-          <div class="card" :class="{ 'selected': role === 'lecturer' }" @click="selectRole('lecturer')">
-            <h2 style="color: cadetblue;">Lecturer</h2>
-            <p>@lecturer.university.ac.id</p>
-          </div>
-
-          <!-- Student -->
-          <div class="card" :class="{ 'selected': role === 'student' }" @click="selectRole('student')">
-            <h2 style="color: cadetblue;">Student</h2>
-            <p>@student.university.ac.id</p>
-          </div>
-
-          <button :disabled="!role" @click="goToLogin">
-            Continue
-          </button>
-        </div>
+        <button :disabled="!role" @click="goToLogin">
+          Continue
+        </button>
       </div>
     </div>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import logo from '../assets/logo.png'
-export default {
-  data() {
-    return {
-      role: null,
-      logo
-    }
-  },
-  methods: {
-    selectRole(role) {
-      this.role = role
-    },
-    goToLogin() {
-      this.$router.push({ 
-        path: '/login',
-        query: { role: this.role }
-    });
-    }
+
+const router = useRouter()
+const role = ref(null)
+
+// --- MEMBERSIHKAN DATA LOGIN LAMA ---
+onMounted(() => {
+  localStorage.clear() // Memastikan sesi benar-benar bersih saat pilih role baru[cite: 1]
+})
+
+// --- LOGIKA PEMILIHAN ROLE ---
+const selectRole = (selectedRole) => {
+  role.value = selectedRole
+}
+
+// --- NAVIGASI KE HALAMAN LOGIN ---
+const goToLogin = () => {
+  if (!role.value) {
+    alert('Please select a role first!')
+    return
   }
+
+  // Mengirim info role via query parameter ke Login_2.vue[cite: 1, 5]
+  router.push({ 
+    path: '/login',
+    query: { role: role.value }
+  })
 }
 </script>
 
 <style scoped>
-/* LOGO */
-.logo-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: -70px;
-}
-
-.logo {
-  width: 95px;
-}
-
-.header p {
-  font-style: italic;
-}
-
+/* --- KONFIGURASI TAMPILAN UTAMA --- */
 .wrapper {
   background: #0f172a;
   min-height: 100vh;
@@ -89,6 +84,7 @@ export default {
   overflow: hidden;
 }
 
+/* --- TAMPILAN HEADER & LOGO --- */
 .header {
   background-color: #ff2d2d;
   color: white;
@@ -98,10 +94,17 @@ export default {
   border-bottom-right-radius: 50% 25%;
 }
 
-.header h2 {
-  font-size: 30px;
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: -70px;
 }
 
+.logo {
+  width: 95px;
+}
+
+/* --- KARTU ROLE & TOMBOL --- */
 .content {
   padding: 25px;
   margin-top: 10px;
@@ -121,27 +124,9 @@ export default {
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
-.card h2 {
-  margin: 0;
-  font-size: 18px;
-  color: #2f80ed;
-}
-
-.card p {
-  margin-top: 5px;
-  font-size: 14px;
-  color: #555;
-}
-
-.card:hover {
-  background: #fff;
-  border: 1px solid #ff2d2d;
-}
-
 .card.selected {
   background: lightcyan;
   border: 1px solid #ff2d2d;
-  box-shadow: 0 4px 12px rgba(255, 45, 45, 0.2);
 }
 
 button {
@@ -152,7 +137,6 @@ button {
   background: #ff2d2d;
   color: white;
   font-weight: bold;
-  font-size: 16px;
   cursor: pointer;
 }
 

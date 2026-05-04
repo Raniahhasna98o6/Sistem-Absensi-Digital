@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="phone">
 
-      <!-- TOPBAR -->
+      <!-- HEADER TOPBAR -->
       <div class="topbar">
         <div class="top-left">
           <svg class="icon-user" viewBox="0 0 24 24">
@@ -13,38 +13,32 @@
         </div>
       </div>
 
-      <!-- RED AREA -->
+      <!-- AREA KONTEN (TEMA MERAH) -->
       <div class="red">
+        <!-- Nama user dinamis dari database Azure -->
+        <h2 class="title">Halo, {{ user.nama || 'Mahasiswa' }}</h2>
 
-        <h2 class="title">Halo, Mahasiswa</h2>
-
-        <!-- CARD -->
+        <!-- KARTU ABSENSI HARI INI -->
         <div class="card">
           <h3 class="card-title">Absensi Hari Ini</h3>
-
           <div class="card-inner">
             <div class="row">
-
               <svg class="icon-calendar" viewBox="0 0 24 24">
                 <rect x="3" y="5" width="18" height="16" rx="2"/>
                 <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-
               <div class="text-group">
                 <p class="matkul">Jaringan Komputer</p>
                 <p class="jam">08.00 - 10.00</p>
               </div>
             </div>
-
             <button @click="absen">ABSEN SEKARANG</button>
           </div>
         </div>
 
-        <!-- FITUR -->
+        <!-- MENU FITUR UTAMA -->
         <h3 class="fitur-title">Fitur Website</h3>
-
         <div class="menu">
-
           <div class="menu-card" @click="keAkun">
             <svg class="menu-icon" viewBox="0 0 24 24">
               <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5z"/>
@@ -60,11 +54,10 @@
             </svg>
             <p>Riwayat Absensi</p>
           </div>
-
         </div>
-
       </div>
 
+      <!-- FOOTER AREA -->
       <div class="bottom"></div>
 
     </div>
@@ -72,17 +65,40 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-const router = useRouter()
 
+// --- INISIALISASI STATE & ROUTER ---
+const router = useRouter()
+const user = ref({ nama: 'Mahasiswa' })
+
+// --- LOGIKA NAVIGASI ---
 const absen = () => router.push('/absensi')
 const keAkun = () => router.push('/akun')
 const keRiwayat = () => router.push('/riwayat')
+
+// --- AMBIL DATA USER DARI STORAGE SAAT HALAMAN DIMUAT ---
+onMounted(() => {
+  const savedUser = localStorage.getItem('user')
+  const savedRole = localStorage.getItem('role')
+
+  // Proteksi: Pastikan hanya mahasiswa yang bisa akses
+  if (savedRole !== 'student') {
+    router.push('/login')
+    return
+  }
+
+  // Load data hasil sukses login dari database Azure
+  if (savedUser) {
+    user.value = JSON.parse(savedUser)
+  } else {
+    router.push('/login')
+  }
+})
 </script>
 
 <style scoped>
-
-/* BACKGROUND */
+/* --- KONFIGURASI LAYOUT TELEPON --- */
 .wrapper {
   background: #0f172a;
   min-height: 100vh;
@@ -91,7 +107,6 @@ const keRiwayat = () => router.push('/riwayat')
   align-items: center;
 }
 
-/* PHONE */
 .phone {
   width: 390px;
   height: 780px;
@@ -102,7 +117,7 @@ const keRiwayat = () => router.push('/riwayat')
   flex-direction: column;
 }
 
-/* TOPBAR */
+/* --- STYLE HEADER & TEMA --- */
 .topbar {
   padding: 15px;
   background: #f3f3f3;
@@ -119,14 +134,12 @@ const keRiwayat = () => router.push('/riwayat')
   color: black;
 }
 
-/* ICON USER */
 .icon-user {
   width: 30px;
   height: 30px;
   fill: #6b46c1;
 }
 
-/* RED */
 .red {
   background: #ff2d2d;
   padding: 20px;
@@ -134,7 +147,6 @@ const keRiwayat = () => router.push('/riwayat')
   flex: 1;
 }
 
-/* TITLE */
 .title {
   text-align: left;
   font-size: 24px;
@@ -142,7 +154,7 @@ const keRiwayat = () => router.push('/riwayat')
   margin-bottom: 15px;
 }
 
-/* CARD */
+/* --- KARTU ABSENSI & TOMBOL --- */
 .card {
   background: #f1f1f1;
   border-radius: 20px;
@@ -150,14 +162,12 @@ const keRiwayat = () => router.push('/riwayat')
   color: black;
 }
 
-/* CARD TITLE */
 .card-title {
   text-align: left;
   font-size: 18px;
   margin-bottom: 10px;
 }
 
-/* INNER */
 .card-inner {
   background: white;
   border-radius: 15px;
@@ -165,20 +175,17 @@ const keRiwayat = () => router.push('/riwayat')
   box-shadow: 0 10px 20px rgba(0,0,0,0.25);
 }
 
-/* ROW */
 .row {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* TEXT GROUP (BIAR RAPI) */
 .text-group {
   display: flex;
   flex-direction: column;
 }
 
-/* ICON */
 .icon-calendar {
   width: 32px;
   height: 32px;
@@ -187,19 +194,6 @@ const keRiwayat = () => router.push('/riwayat')
   stroke-width: 2.5;
 }
 
-/* TEXT */
-.matkul {
-  font-weight: bold;
-  font-size: 17px;
-}
-
-.jam {
-  font-size: 14px;
-  color: #444;
-  margin-top: 2px;
-}
-
-/* BUTTON */
 button {
   width: 100%;
   margin-top: 14px;
@@ -209,9 +203,10 @@ button {
   border: none;
   border-radius: 12px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-/* FITUR */
+/* --- MENU NAVIGATION CARDS --- */
 .fitur-title {
   text-align: left;
   margin-top: 25px;
@@ -219,14 +214,12 @@ button {
   font-weight: bold;
 }
 
-/* MENU */
 .menu {
   display: flex;
   gap: 12px;
   margin-top: 10px;
 }
 
-/* MENU CARD */
 .menu-card {
   flex: 1;
   background: white;
@@ -235,9 +228,9 @@ button {
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  cursor: pointer;
 }
 
-/* ICON MENU (FIX BESAR & BOLD) */
 .menu-icon {
   width: 40px;
   height: 40px;
@@ -247,10 +240,8 @@ button {
   margin-bottom: 10px;
 }
 
-/* BOTTOM */
 .bottom {
   height: 35px;
   background: #f3f3f3;
 }
-
 </style>

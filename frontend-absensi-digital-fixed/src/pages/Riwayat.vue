@@ -2,13 +2,13 @@
   <div class="wrapper">
     <div class="phone">
 
-      <!-- HEADER -->
+      <!-- HEADER & NAVIGASI -->
       <div class="header">
         <span class="back" @click="back">←</span>
         <h3>Riwayat Absensi</h3>
       </div>
 
-      <!-- FILTER -->
+      <!-- FILTER STATUS (SEMUA, HADIR, TIDAK) -->
       <div class="filter">
         <button 
           :class="['tab', active === 'semua' && 'active']"
@@ -16,14 +16,12 @@
         >
           Semua
         </button>
-
         <button 
           :class="['tab', active === 'hadir' && 'active']"
           @click="active = 'hadir'"
         >
           Hadir
         </button>
-
         <button 
           :class="['tab', active === 'tidak' && 'active']"
           @click="active = 'tidak'"
@@ -32,9 +30,8 @@
         </button>
       </div>
 
-      <!-- CONTENT -->
+      <!-- LIST RIWAYAT HASIL FILTER -->
       <div class="content">
-
         <div 
           v-for="(item, index) in filteredData" 
           :key="index"
@@ -42,7 +39,6 @@
         >
           <div class="row">
             <div class="icon">📅</div>
-
             <div class="text">
               <p class="matkul">{{ item.matkul }}</p>
               <p class="ruang">{{ item.ruang }}</p>
@@ -50,7 +46,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
     </div>
@@ -58,38 +53,45 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 const router = useRouter()
+const active = ref('semua')
+const data = ref([])
+
+// --- LOGIKA NAVIGASI ---
 const back = () => router.push('/beranda')
 
-const data = ref([
-  {
-    matkul: 'Jaringan Komputer',
-    ruang: 'TULT 0714',
-    jam: '08.00 - 10.00',
-    status: 'hadir'
-  },
-  {
-    matkul: 'Basis Data',
-    ruang: 'LAB 02',
-    jam: '10.00 - 12.00',
-    status: 'tidak'
-  }
-])
-
-const active = ref('semua')
-
+// --- LOGIKA FILTER DATA REAKTIF ---
 const filteredData = computed(() => {
   if (active.value === 'semua') return data.value
   return data.value.filter(item => item.status === active.value)
 })
+
+// --- AMBIL DATA RIWAYAT DARI AZURE ---
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token')
+    // Menggunakan domain: sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/history`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    data.value = response.data
+  } catch (error) {
+    console.error('Gagal mengambil data:', error)
+    // Fallback data jika server offline
+    data.value = [
+      { matkul: 'Jaringan Komputer', ruang: 'TULT 0714', jam: '08.00 - 10.00', status: 'hadir' },
+      { matkul: 'Basis Data', ruang: 'LAB 02', jam: '10.00 - 12.00', status: 'tidak' }
+    ]
+  }
+})
 </script>
 
 <style scoped>
-
-/* WRAPPER */
+/* --- LAYOUT UTAMA --- */
 .wrapper {
   min-height: 100vh;
   background: #0f1c2e;
@@ -98,7 +100,6 @@ const filteredData = computed(() => {
   align-items: center;
 }
 
-/* PHONE */
 .phone {
   width: 390px;
   height: 800px;
@@ -109,7 +110,7 @@ const filteredData = computed(() => {
   flex-direction: column;
 }
 
-/* HEADER */
+/* --- TAMPILAN HEADER --- */
 .header {
   display: flex;
   align-items: center;
@@ -121,7 +122,7 @@ const filteredData = computed(() => {
 .header h3 {
   font-weight: 700;
   font-size: 18px;
-  color: black; /* 🔥 FIX WARNA */
+  color: black;
 }
 
 .back {
@@ -129,7 +130,7 @@ const filteredData = computed(() => {
   cursor: pointer;
 }
 
-/* FILTER */
+/* --- TAB FILTER --- */
 .filter {
   display: flex;
   gap: 10px;
@@ -144,6 +145,7 @@ const filteredData = computed(() => {
   background: white;
   color: #ff3b30;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .tab.active {
@@ -151,7 +153,7 @@ const filteredData = computed(() => {
   color: white;
 }
 
-/* CONTENT */
+/* --- KONTEN & KARTU --- */
 .content {
   padding: 16px;
   display: flex;
@@ -159,7 +161,6 @@ const filteredData = computed(() => {
   gap: 14px;
 }
 
-/* CARD */
 .card {
   background: #ff3b30;
   color: white;
@@ -168,41 +169,29 @@ const filteredData = computed(() => {
   box-shadow: 0 6px 14px rgba(0,0,0,0.2);
 }
 
-/* ROW */
 .row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
 
-/* ICON */
 .icon {
   font-size: 30px;
 }
 
-/* TEXT (RATA KIRI SEMUA 🔥) */
 .text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-/* MATKUL */
 .matkul {
   font-size: 16px;
   font-weight: 700;
 }
 
-/* RUANG */
-.ruang {
+.ruang, .jam {
   font-size: 14px;
   margin-top: 2px;
 }
-
-/* JAM */
-.jam {
-  font-size: 13px;
-  margin-top: 2px;
-}
-
 </style>

@@ -1,42 +1,49 @@
 <template>
   <div class="wrapper">
     <div class="phone">
-
-      <!-- CONTENT CENTER -->
       <div class="content">
+        <!-- IKON SUKSES -->
+        <div class="check-circle">✓</div>
 
-        <!-- ICON -->
-        <div class="check-circle">
-          ✓
-        </div>
-
-        <!-- TEXT -->
+        <!-- TEKS KONFIRMASI -->
         <h2>Absensi Berhasil</h2>
 
-        <!-- BUTTON -->
+        <!-- TOMBOL DINAMIS -->
         <button @click="kembali">
           Kembali ke Beranda
         </button>
-
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+// --- INISIALISASI ROUTER & STATE ---
 const router = useRouter()
+const userRole = ref('student')
 
+// --- LOGIKA AMBIL ROLE SAAT MOUNT ---
+onMounted(() => {
+  // Mengambil role dari storage untuk menentukan tujuan navigasi
+  userRole.value = localStorage.getItem('role') || 'student'
+})
+
+// --- NAVIGASI DINAMIS BERDASARKAN ROLE ---
 const kembali = () => {
-  router.push('/beranda')
+  // Redirect ke endpoint beranda yang sesuai dengan identitas user[cite: 9, 10]
+  if (userRole.value === 'lecturer') {
+    router.push('/beranda-dosen')
+  } else {
+    router.push('/beranda')
+  }
 }
 </script>
 
 <style scoped>
-
-/* BACKGROUND */
+/* --- LAYOUT UTAMA --- */
 .wrapper {
   min-height: 100vh;
   background: #0f1c2e;
@@ -45,7 +52,6 @@ const kembali = () => {
   align-items: center;
 }
 
-/* PHONE */
 .phone {
   width: 390px;
   height: 800px;
@@ -55,18 +61,18 @@ const kembali = () => {
   display: flex;
 }
 
-/* CONTENT CENTER (INI KUNCI BIAR MIRIP MOCKUP) */
+/* --- KONTEN TENGAH --- */
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;  /* tengah vertikal */
-  align-items: center;      /* tengah horizontal */
+  justify-content: center;
+  align-items: center;
   gap: 25px;
   padding: 20px;
 }
 
-/* ICON BULAT */
+/* --- ELEMEN VISUAL --- */
 .check-circle {
   width: 120px;
   height: 120px;
@@ -75,20 +81,17 @@ const kembali = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-
   color: white;
   font-size: 60px;
   font-weight: bold;
 }
 
-/* TEXT */
 h2 {
   font-size: 24px;
   font-weight: 700;
   color: black;
 }
 
-/* BUTTON */
 button {
   background: #ff3b30;
   color: white;
@@ -98,9 +101,6 @@ button {
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
-
-  /* biar lebar kayak mockup */
   width: 70%;
 }
-
 </style>

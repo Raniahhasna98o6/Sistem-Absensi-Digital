@@ -72,17 +72,56 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue' // 1. Tambah ref & onMounted
 import { useRouter } from 'vue-router'
+import axios from 'axios' // 2. Tambah axios
 
 const router = useRouter()
+
+// 3. State untuk simpan data user asli dari database
+const user = ref({
+  nama: 'Memuat...',
+  nim: '...',
+  prodi: '...',
+  fakultas: '...',
+  angkatan: '...',
+  email: '...',
+  nohp: '...'
+})
 
 const back = () => {
   router.push('/beranda')
 }
 
+// 4. Logout wajib hapus semua data di browser biar aman
 const logout = () => {
+  localStorage.clear() // Hapus token & info user
   router.push('/login')
 }
+
+// 5. Ambil data profil begitu halaman dibuka[cite: 1, 8]
+onMounted(async () => {
+  const savedUser = localStorage.getItem('user')
+  const token = localStorage.getItem('token')
+
+  // Prioritas 1: Ambil data yang tadi disimpen pas login di Login_2.vue
+  if (savedUser) {
+    user.value = JSON.parse(savedUser)
+  } else if (token) {
+    // Prioritas 2: Kalau ga ada di storage, minta langsung ke Azure pake token[cite: 1]
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      user.value = response.data
+    } catch (error) {
+      console.error('Gagal ambil profil:', error)
+      router.push('/login')
+    }
+  } else {
+    router.push('/login') // Tendang ke login kalau ga punya akses
+  }
+})
 </script>
 
 <style scoped>

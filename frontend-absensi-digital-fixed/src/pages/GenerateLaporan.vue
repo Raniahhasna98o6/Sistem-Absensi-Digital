@@ -2,33 +2,31 @@
   <div class="wrapper">
     <div class="phone">
 
-      <!-- HEADER -->
+      <!-- HEADER & NAVIGASI -->
       <div class="header">
-        <span @click="back">←</span>
+        <span @click="back" style="cursor:pointer">←</span>
         <h3>Laporan Absensi</h3>
       </div>
 
-      <!-- CONTENT -->
       <div class="content">
 
-        <!-- FILTER -->
+        <!-- FILTER MATA KULIAH & TANGGAL -->
         <div class="filter">
           <select class="select">
             <option>Jaringan Komputer</option>
             <option>Basis Data</option>
           </select>
-
           <input type="date" class="date" />
         </div>
 
-        <!-- SUMMARY -->
+        <!-- RINGKASAN STATISTIK DARI DATABASE -->
         <div class="summary">
-          <div>Total: 30</div>
-          <div>Hadir: 25</div>
-          <div>Tidak Hadir: 5</div>
+          <div>Total: {{ mahasiswa.length }}</div>
+          <div>Hadir: {{ countHadir }}</div>
+          <div>Tidak: {{ mahasiswa.length - countHadir }}</div>
         </div>
 
-        <!-- LIST -->
+        <!-- DAFTAR MAHASISWA HASIL ABSENSI -->
         <div class="list">
           <div class="item" v-for="mhs in mahasiswa" :key="mhs.nama">
             <span class="nama">{{ mhs.nama }}</span>
@@ -39,30 +37,52 @@
         </div>
 
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-const router = useRouter()
+import axios from 'axios'
 
+const router = useRouter()
+const mahasiswa = ref([])
+
+// --- LOGIKA HITUNG RINGKASAN OTOMATIS ---
+const countHadir = computed(() => {
+  return mahasiswa.value.filter(m => m.status === 'Hadir').length
+})
+
+// --- LOGIKA NAVIGASI KEMBALI ---
 const back = () => {
   router.push('/beranda-dosen')
 }
 
-const mahasiswa = [
-  { nama: 'Andi Pratama', status: 'Hadir' },
-  { nama: 'Budi Santoso', status: 'Tidak Hadir' },
-  { nama: 'Citra Dewi', status: 'Hadir' },
-  { nama: 'Dewi Lestari', status: 'Hadir' },
-  { nama: 'Eko Saputra', status: 'Tidak Hadir' }
-]
+// --- AMBIL DATA LAPORAN DARI AZURE ---
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token')
+    // Menggunakan domain: sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/report`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    
+    mahasiswa.value = response.data 
+  } catch (error) {
+    console.error('Gagal mengambil laporan:', error)
+    // Fallback data jika backend belum siap
+    mahasiswa.value = [
+      { nama: 'Andi Pratama', status: 'Hadir' },
+      { nama: 'Budi Santoso', status: 'Tidak Hadir' },
+      { nama: 'Citra Dewi', status: 'Hadir' }
+    ]
+  }
+})
 </script>
 
 <style scoped>
-
+/* --- LAYOUT UTAMA --- */
 .wrapper {
   min-height: 100vh;
   background: #0f1c2e;
@@ -79,6 +99,7 @@ const mahasiswa = [
   overflow: hidden;
 }
 
+/* --- STYLE HEADER & FORM --- */
 .header {
   display: flex;
   align-items: center;
@@ -111,6 +132,7 @@ select, input {
   color: white;
 }
 
+/* --- STYLE RINGKASAN & ITEM LIST --- */
 .summary {
   display: flex;
   justify-content: space-between;
@@ -150,5 +172,4 @@ select, input {
   color: red;
   font-weight: bold;
 }
-
 </style>
