@@ -2,33 +2,26 @@
   <div class="wrapper">
     <div class="phone">
 
-      <!-- HEADER -->
+      <!-- HEADER NAVIGASI -->
       <div class="header">
         <span class="back" @click="goBack">←</span>
         <h3>Ambil Foto Absensi</h3>
       </div>
 
-      <!-- CAMERA AREA -->
+      <!-- AREA VIEWPORT KAMERA -->
       <div class="camera-container">
-
-        <!-- VIDEO -->
         <video ref="video" autoplay playsinline></video>
-
-        <!-- FRAME -->
+        <!-- Overlay Bingkai Wajah -->
         <div class="frame"></div>
-
-        <!-- TEXT FIX -->
-        <div class="hint">
-          Pastikan wajah terlihat jelas
-        </div>
-
+        <div class="hint">Pastikan wajah terlihat jelas</div>
       </div>
 
-      <!-- BUTTON -->
+      <!-- TOMBOL SHUTTER -->
       <div class="bottom">
         <button class="shutter" @click="takePhoto"></button>
       </div>
 
+      <!-- CANVAS TERSEMBUNYI UNTUK PROSES FOTO -->
       <canvas ref="canvas" style="display:none;"></canvas>
 
     </div>
@@ -36,28 +29,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const video = ref(null)
 const canvas = ref(null)
 const router = useRouter()
+let streamInstance = null 
 
+// --- NAVIGASI KEMBALI ---
 const goBack = () => {
   router.push('/absensi')
 }
 
+// --- INISIALISASI KAMERA SAAT HALAMAN DIBUKA ---
 onMounted(async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" }
+      video: { facingMode: "user" } // Menggunakan kamera depan
     })
+    streamInstance = stream 
     video.value.srcObject = stream
   } catch (err) {
     alert("Kamera tidak diizinkan / tidak tersedia")
   }
 })
 
+// --- MEMATIKAN STREAM KAMERA SAAT PINDAH HALAMAN ---
+onUnmounted(() => {
+  if (streamInstance) {
+    streamInstance.getTracks().forEach(track => track.stop()) // Stop semua track video
+  }
+})
+
+// --- PROSES PENGAMBILAN GAMBAR ---
 const takePhoto = () => {
   const ctx = canvas.value.getContext('2d')
   canvas.value.width = video.value.videoWidth
@@ -65,21 +70,18 @@ const takePhoto = () => {
 
   ctx.drawImage(video.value, 0, 0)
 
+  // Konversi hasil jepretan ke Base64
   const image = canvas.value.toDataURL("image/png")
 
-  // 🔥 kirim ke preview
-  router.push({
-    path: '/preview',
-    query: {
-      img: image
-    }
-  })
+  // Simpan foto di storage sementara untuk dilempar ke halaman preview
+  localStorage.setItem('captured_photo', image)
+
+  router.push('/preview')
 }
 </script>
 
 <style scoped>
-
-/* BACKGROUND */
+/* --- KONFIGURASI LAYOUT UTAMA --- */
 .wrapper {
   min-height: 100vh;
   background: #0f1c2e;
@@ -98,7 +100,7 @@ const takePhoto = () => {
   flex-direction: column;
 }
 
-/* HEADER FIX */
+/* --- TAMPILAN HEADER --- */
 .header {
   display: flex;
   align-items: center;
@@ -109,8 +111,8 @@ const takePhoto = () => {
 .header h3 {
   margin-left: 10px;
   font-size: 18px;
-  font-weight: 700; /* BOLD */
-  color: #000; /* HITAM */
+  font-weight: 700;
+  color: #000;
 }
 
 .back {
@@ -119,7 +121,7 @@ const takePhoto = () => {
   color: #000;
 }
 
-/* CAMERA */
+/* --- TAMPILAN KAMERA & OVERLAY --- */
 .camera-container {
   position: relative;
   flex: 1;
@@ -132,7 +134,6 @@ video {
   object-fit: cover;
 }
 
-/* FRAME */
 .frame {
   position: absolute;
   top: 20%;
@@ -143,7 +144,6 @@ video {
   border-radius: 10px;
 }
 
-/* 🔥 TEXT FIX (INI YANG PENTING) */
 .hint {
   position: absolute;
   bottom: 120px;
@@ -153,13 +153,11 @@ video {
   padding: 10px 18px;
   border-radius: 20px;
   font-size: 14px;
-
-  /* FIX UTAMA */
-  white-space: nowrap; /* supaya tidak turun */
+  white-space: nowrap;
   text-align: center;
 }
 
-/* BUTTON */
+/* --- KONTROL TOMBOL --- */
 .bottom {
   padding: 20px;
   display: flex;

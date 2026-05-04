@@ -64,18 +64,45 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue' // 1. Tambah ref & onMounted
 import { useRouter } from 'vue-router'
+import axios from 'axios' // 2. Tambah axios
 
 const router = useRouter()
+
+// 3. State untuk menyimpan data matkul dari Azure
+const matkulHariIni = ref({
+  matkul: 'Memuat jadwal...',
+  jam: '-',
+  ruang: '-'
+})
 
 const back = () => {
   router.push('/beranda')
 }
 
 const ambilFoto = () => {
-  console.log('klik ambil foto')
+  // Simpan data matkul yang sedang di-absen ke localStorage untuk dipakai di Preview nanti
+  localStorage.setItem('active_class', JSON.stringify(matkulHariIni.value))
   router.push('/kamera')
 }
+
+// 4. Ambil data asli dari Azure begitu halaman dibuka
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token') // Ambil token login tadi
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/today`, {
+      headers: { Authorization: `Bearer ${token}` } // Kirim token ke Azure[cite: 1]
+    })
+    
+    // Update data matkul dengan data asli dari database Azure
+    matkulHariIni.value = response.data
+  } catch (error) {
+    console.error('Error fetching schedule:', error)
+    // Fallback data dummy jika server bermasalah
+    matkulHariIni.value = { matkul: 'Jaringan Komputer', jam: '08.00 - 10.00', ruang: 'TULT 0714' }
+  }
+})
 </script>
 
 <style scoped>

@@ -2,17 +2,18 @@
   <div class="wrapper">
     <div class="phone">
 
-      <!-- HEADER -->
+      <!-- HEADER LOGIN -->
       <div class="header">
-        <h2>Sistem Absensi Digital Mahasiswa</h2>
+        <h2>Sistem Absensi Digital</h2>
+        <p>Silakan masuk ke akun Anda</p>
       </div>
 
-      <!-- LOGO -->
+      <!-- LOGO APLIKASI -->
       <div class="logo-wrapper">
         <img :src="logo" class="logo" />
       </div>
 
-      <!-- FORM -->
+      <!-- FORM INPUT & AKSI -->
       <div class="form">
         <input type="text" placeholder="Email" v-model="email" />
         <input type="password" placeholder="Password" v-model="password" />
@@ -32,16 +33,17 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios' 
 import logo from '../assets/logo.png'
 
+// --- INISIALISASI ROUTING & STATE ---
 const email = ref('')
 const password = ref('')
 const router = useRouter()
 const route = useRoute()
+const role = route.query.role || '' 
 
-// 🔥 AMBIL ROLE DARI HALAMAN ROLE
-const role = route.query.role || ''
-
+// --- LOGIKA NAVIGASI KE REGISTER ---
 const goToRegister = () => {
   router.push({
     path: '/register',
@@ -49,43 +51,48 @@ const goToRegister = () => {
   })
 }
 
-const login = () => {
-  // VALIDASI ROLE
-  if (!role) {
-    alert('Please select role first!')
+// --- PROSES AUTENTIKASI KE SERVER AZURE ---
+const login = async () => {
+  // 1. Validasi Input Lokal
+  if (!role) return alert('Pilih role terlebih dahulu!')
+  if (!email.value || !password.value) return alert('Email dan password wajib diisi!')
+
+  // 2. Proteksi Domain Email (Client-side Defense)
+  const domain = role === 'lecturer' ? '@lecturer.university.ac.id' : '@student.university.ac.id'
+  if (!email.value.endsWith(domain)) {
+    alert(`Gunakan email resmi ${role}!`)
     return
   }
 
-  // VALIDASI INPUT
-  if (!email.value || !password.value) {
-    alert('Please fill email & password!')
-    return
-  }
+  try {
+    // 3. Eksekusi Request Menggunakan Variabel .env
+    // URL Akhir: https://sistemabsensi...azurewebsites.net/login
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
+      email: email.value,
+      password: password.value,
+      role: role
+    })
 
-  // VALIDASI EMAIL SESUAI ROLE
-  if (role === 'lecturer' && !email.value.endsWith('@lecturer.university.ac.id')) {
-    alert('Gunakan email dosen!')
-    return
-  }
+    // 4. Manajemen Session (Simpan Token & User Data)
+    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('user', JSON.stringify(response.data.user))
+    localStorage.setItem('role', role)
 
-  if (role === 'student' && !email.value.endsWith('@student.university.ac.id')) {
-    alert('Gunakan email mahasiswa!')
-    return
-  }
+    alert('Login Berhasil!')
 
-  // 🔥 SIMPAN ROLE
-  localStorage.setItem('role', role)
-
-  // 🔥 REDIRECT SESUAI ROLE
-  if (role === 'lecturer') {
-    router.push('/beranda-dosen')
-  } else {
-    router.push('/beranda')
+    // 5. Routing Berdasarkan Role User
+    router.push(role === 'lecturer' ? '/beranda-dosen' : '/beranda')
+    
+  } catch (error) {
+    // 6. Penanganan Error Koneksi/Server
+    console.error('Login Error:', error)
+    alert(error.response?.data?.message || 'Gagal terhubung ke server Azure!')
   }
 }
 </script>
 
 <style scoped>
+/* --- LAYOUT UTAMA --- */
 .wrapper {
   background: #0f172a;
   min-height: 100vh;
@@ -102,6 +109,7 @@ const login = () => {
   overflow: hidden;
 }
 
+/* --- TAMPILAN VISUAL HEADER --- */
 .header {
   background: #ff2d2d;
   color: white;
@@ -121,6 +129,7 @@ const login = () => {
   width: 95px;
 }
 
+/* --- ELEMEN FORM & INPUT --- */
 .form {
   padding: 25px;
 }
@@ -133,6 +142,7 @@ input {
   border: 1px solid #ccc;
   background: #f5f5f5;
   color: black;
+  box-sizing: border-box;
 }
 
 button {
@@ -143,6 +153,7 @@ button {
   border: none;
   border-radius: 12px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .signup {
@@ -154,5 +165,6 @@ button {
 .signup span {
   color: #2f80ed;
   cursor: pointer;
+  font-weight: bold;
 }
 </style>
