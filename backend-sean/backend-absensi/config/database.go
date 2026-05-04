@@ -13,7 +13,7 @@ var DB *sql.DB
 func ConnectDB() {
 	// Ganti username dan password ini dengan kredensial Azure MySQL lu
 	// DSN format: username:password@tcp(host:port)/dbname
-	dsn := "USERNAME_AZURE_LU:PASSWORD_AZURE_LU@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true"
+	dsn := "sean:Bean2080!!!!@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true"
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
