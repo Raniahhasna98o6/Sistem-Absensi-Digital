@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend-absensi
+      dockerfile: Dockerfile
+    ports:
+      # Port host:Port container
+      # Untuk Azure, port container akan dinamis berdasarkan env PORT
+      - "8080:8080" 
+    environment:
+      - PORT=8080
+    # Jika database Anda ada di luar docker (di host lokal laptop Anda), 
+    # Anda perlu mengubah 127.0.0.1 menjadi host.docker.internal di backend-absensi/config/database.go
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./absensi-digital
+      dockerfile: Dockerfile
+    ports:
+      # Port host:Port container (Nginx)
+      # Frontend diakses melalui localhost:3000
+      - "3000:80"
+    depends_on:
+      - backend
