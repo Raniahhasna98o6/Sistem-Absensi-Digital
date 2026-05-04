@@ -41,7 +41,7 @@ const email = ref('')
 const password = ref('')
 const router = useRouter()
 const route = useRoute()
-const role = route.query.role || '' // Menangkap role dari halaman sebelumnya
+const role = route.query.role || '' 
 
 // --- LOGIKA NAVIGASI KE REGISTER ---
 const goToRegister = () => {
@@ -53,11 +53,11 @@ const goToRegister = () => {
 
 // --- PROSES AUTENTIKASI KE SERVER AZURE ---
 const login = async () => {
-  // Validasi awal role & input
+  // 1. Validasi Input Lokal
   if (!role) return alert('Pilih role terlebih dahulu!')
   if (!email.value || !password.value) return alert('Email dan password wajib diisi!')
 
-  // Proteksi domain email sesuai role
+  // 2. Proteksi Domain Email (Client-side Defense)
   const domain = role === 'lecturer' ? '@lecturer.university.ac.id' : '@student.university.ac.id'
   if (!email.value.endsWith(domain)) {
     alert(`Gunakan email resmi ${role}!`)
@@ -65,24 +65,26 @@ const login = async () => {
   }
 
   try {
-    // Hit endpoint login di domain Azure lu
+    // 3. Eksekusi Request Menggunakan Variabel .env
+    // URL Akhir: https://sistemabsensi...azurewebsites.net/login
     const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
       email: email.value,
       password: password.value,
       role: role
     })
 
-    // Simpan kredensial ke storage browser untuk sesi aktif
+    // 4. Manajemen Session (Simpan Token & User Data)
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('user', JSON.stringify(response.data.user))
     localStorage.setItem('role', role)
 
     alert('Login Berhasil!')
 
-    // Redirect otomatis berdasarkan identitas user
+    // 5. Routing Berdasarkan Role User
     router.push(role === 'lecturer' ? '/beranda-dosen' : '/beranda')
     
   } catch (error) {
+    // 6. Penanganan Error Koneksi/Server
     console.error('Login Error:', error)
     alert(error.response?.data?.message || 'Gagal terhubung ke server Azure!')
   }
