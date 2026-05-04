@@ -41,5 +41,5 @@ func main() {
 	}
 
 	// Cukup SATU kali r.Run() di paling akhir file
-	r.Run(":" + port)
+	r.Run("0.0.0.0:" + port)
 }
