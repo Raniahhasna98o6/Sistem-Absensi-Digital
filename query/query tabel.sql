@@ -1,84 +1,49 @@
-CREATE DATABASE IMPAL;
-USE IMPAL;
-CREATE TABLE User(
-	id_user VARCHAR(20) PRIMARY KEY,
-    nama VARCHAR(100),
-    email VARCHAR(100),
-    password VARCHAR(255)
+-- Membuat Database
+CREATE DATABASE IF NOT EXISTS db_absensi;
+USE db_absensi;
+
+-- 1. Tabel USER (Untuk Autentikasi Terpusat)
+CREATE TABLE User (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('mahasiswa', 'dosen') NOT NULL
 );
 
-CREATE TABLE Mahasiswa(
-	id_user VARCHAR(20) PRIMARY KEY,
-    NIM VARCHAR (15) UNIQUE,
-    FOREIGN KEY (id_user) REFERENCES User(id_user)
+-- 2. Tabel KELAS (Dibuat lebih dulu karena Mahasiswa butuh id_kelas)
+CREATE TABLE kelas (
+    id_kelas INT AUTO_INCREMENT PRIMARY KEY,
+    nama_kelas VARCHAR(50) NOT NULL,
+    kode_mk VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE Dosen(
-	id_user VARCHAR(20) PRIMARY KEY,
-    NIDN VARCHAR (15) UNIQUE,
-    FOREIGN KEY (id_user) REFERENCES User(id_user)
+-- 3. Tabel MAHASISWA
+CREATE TABLE mahasiswa (
+    nim VARCHAR(20) PRIMARY KEY,
+    id_user INT NOT NULL,
+    id_kelas INT NOT NULL,
+    nama VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES User(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (id_kelas) REFERENCES kelas(id_kelas) ON DELETE CASCADE
 );
 
-CREATE TABLE Ruangan(
-    id_ruangan INT AUTO_INCREMENT PRIMARY KEY,
-    nama_ruangan VARCHAR(50),
-    kapasitas INT
+-- 4. Tabel DOSEN
+CREATE TABLE dosen (
+    nidn VARCHAR(20) PRIMARY KEY,
+    id_user INT NOT NULL,
+    nama VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES User(id_user) ON DELETE CASCADE
 );
 
-CREATE TABLE Mata_Kuliah(
-    kode_mk VARCHAR(10) PRIMARY KEY,
-    id_user VARCHAR(20) NOT NULL,
-    id_ruangan INT,
-    nama_mk VARCHAR(100),
-    jadwal VARCHAR(100),
-    FOREIGN KEY (id_user) REFERENCES Dosen(id_user),
-    FOREIGN KEY (id_ruangan) REFERENCES Ruangan(id_ruangan)
-);
-
-CREATE TABLE Absensi(
+-- 5. Tabel ABSENSI (foto_abs menggunakan LONGTEXT untuk menampung Base64)
+CREATE TABLE absensi (
     id_absensi INT AUTO_INCREMENT PRIMARY KEY,
-    id_user VARCHAR(20),
-    kode_mk VARCHAR(10),
-    tanggal_abs DATE,
-    status_abs ENUM("Hadir", "Tidak Hadir"),
-    lokasi_abs VARCHAR(100),
-    FOREIGN KEY (id_user) REFERENCES Mahasiswa(id_user),
-    FOREIGN KEY (kode_mk) REFERENCES Mata_Kuliah(kode_mk)
+    nim VARCHAR(20) NOT NULL,
+    tanggal_abs DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status_abs VARCHAR(20) NOT NULL,
+    lokasi_abs TEXT NOT NULL,
+    foto_abs LONGTEXT NOT NULL,
+    latitude DOUBLE NOT NULL,
+    longitude DOUBLE NOT NULL,
+    FOREIGN KEY (nim) REFERENCES mahasiswa(nim) ON DELETE CASCADE
 );
-
-CREATE TABLE Laporan(
-	id_laporan INT auto_increment PRIMARY KEY,
-    id_user VARCHAR(20),
-    periode VARCHAR(20),
-	FOREIGN KEY (id_user) REFERENCES User(id_user)
-);
-
-CREATE TABLE KRS(
-    id_user VARCHAR(20),
-    kode_mk VARCHAR(10),
-    semester INT NOT NULL,
-    PRIMARY KEY (id_user, kode_mk),
-    FOREIGN KEY (id_user) REFERENCES Mahasiswa(id_user),
-    FOREIGN KEY (kode_mk) REFERENCES Mata_Kuliah(kode_mk)
-);
-
-CREATE TABLE Nilai(
-    id_user VARCHAR(20),
-    kode_mk VARCHAR(10),
-    nilai_angka DOUBLE,
-    nilai_index VARCHAR(2),
-    PRIMARY KEY (id_user, kode_mk),
-    FOREIGN KEY (id_user, kode_mk) REFERENCES KRS(id_user, kode_mk)
-);
-
-
-
-SELECT * FROM User;
-SELECT * FROM Mahasiswa;
-SELECT * FROM Dosen;
-SELECT * FROM KRS;
-SELECT * FROM Nilai;
-SELECT * FROM Ruangan;
-SELECT * FROM Mata_Kuliah;
-SELECT * FROM Absensi;
-SELECT * FROM Laporan;
