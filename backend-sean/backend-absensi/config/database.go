@@ -11,21 +11,24 @@ import (
 var DB *sql.DB
 
 func ConnectDB() {
-	dsn := "root:1111@tcp(127.0.0.1:11111)/db_absensi?parseTime=true&loc=Local"
+	// Ganti username dan password ini dengan kredensial Azure MySQL lu
+	// DSN format: username:password@tcp(host:port)/dbname
+	dsn := "USERNAME_AZURE_LU:PASSWORD_AZURE_LU@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true"
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Gagal konfigurasi database:", err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Database tidak merespon, pastikan host dan kredensial Azure benar:", err)
 	}
 
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(time.Hour)
 
+	log.Println("Berhasil nyambung ke Database Azure MySQL!")
 	DB = db
 }
