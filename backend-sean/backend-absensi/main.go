@@ -4,7 +4,6 @@ import (
 	"backend-absensi/config"
 	"backend-absensi/models"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -15,12 +14,27 @@ func main() {
 
 	r := gin.Default()
 
-	// 1. INI RUTE REGISTER YANG HILANG (Biar Frontend Nggak 404)
+	// --- 1. JEMBATAN CORS (WAJIB UNTUK BEDA DOMAIN NETLIFY -> AZURE) ---
+	r.Use(func(c *gin.Context) {
+		// PENTING: Ganti dengan URL Netlify kamu yang asli (tanpa garis miring / di akhir)
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://NAMA-WEB-LU.netlify.app")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
+	// 2. RUTE REGISTER
 	r.POST("/register", func(c *gin.Context) {
-		// Logika insert database untuk registrasi ditaruh di sini nanti
 		c.JSON(http.StatusOK, gin.H{"message": "Registrasi berhasil masuk backend!"})
 	})
 
+	// 3. RUTE LOGIN MAHASISWA
 	r.POST("/login/mahasiswa", func(c *gin.Context) {
 		var req struct {
 			Email    string `json:"email"`
@@ -33,13 +47,16 @@ func main() {
 
 		m := models.Mahasiswa{}
 		if m.Login(req.Email, req.Password) {
-			c.SetCookie("nim_user", m.NIM, 3600, "/", "localhost", false, true)
+			// PERBAIKAN COOKIE AZURE: SameSiteNoneMode dan secure=true, hapus "localhost"
+			c.SetSameSite(http.SameSiteNoneMode)
+			c.SetCookie("nim_user", m.NIM, 3600, "/", "", true, true)
 			c.JSON(http.StatusOK, gin.H{"message": "Login Mahasiswa Berhasil", "nama": m.Nama})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau Password salah"})
 		}
 	})
 
+	// 4. RUTE INPUT ABSENSI
 	r.POST("/api/absensi", func(c *gin.Context) {
 		var data models.Absensi
 		if err := c.BindJSON(&data); err != nil {
@@ -63,12 +80,14 @@ func main() {
 		}
 	})
 
+	// 5. RUTE RIWAYAT ABSENSI
 	r.GET("/api/absensi/riwayat", func(c *gin.Context) {
 		nim, _ := c.Cookie("nim_user")
 		m := models.Mahasiswa{NIM: nim}
 		c.JSON(http.StatusOK, m.BukaRiwayat())
 	})
 
+	// 6. RUTE LOGIN DOSEN
 	r.POST("/login/dosen", func(c *gin.Context) {
 		var req struct {
 			Email    string `json:"email"`
@@ -78,13 +97,16 @@ func main() {
 
 		d := models.Dosen{}
 		if d.Login(req.Email, req.Password) {
-			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "localhost", false, true)
+			// PERBAIKAN COOKIE AZURE
+			c.SetSameSite(http.SameSiteNoneMode)
+			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "", true, true)
 			c.JSON(http.StatusOK, gin.H{"message": "Login Dosen Berhasil", "nama": d.Nama})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Akses Dosen ditolak"})
 		}
 	})
 
+	// 7. RUTE LAPORAN DOSEN
 	r.GET("/api/dosen/laporan", func(c *gin.Context) {
 		nidn, err := c.Cookie("nidn_user")
 		if err != nil {
@@ -106,16 +128,14 @@ func main() {
 		c.JSON(http.StatusOK, laporan)
 	})
 
+	// 8. RUTE LOGOUT
 	r.POST("/logout", func(c *gin.Context) {
-		c.SetCookie("nim_user", "", -1, "/", "localhost", false, true)
-		c.SetCookie("nidn_user", "", -1, "/", "localhost", false, true)
+		c.SetSameSite(http.SameSiteNoneMode)
+		c.SetCookie("nim_user", "", -1, "/", "", true, true)
+		c.SetCookie("nidn_user", "", -1, "/", "", true, true)
 		c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})
 	})
 
-	// 2. PERBAIKAN PORT UNTUK AZURE
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	r.Run("0.0.0.0:" + port)
+	// 9. PERBAIKAN PORT UNTUK AZURE
+	r.Run("0.0.0.0:8080")
 }

@@ -1,26 +1,18 @@
-# Build Stage
-FROM golang:latest AS builder
+FROM golang:alpine
 
 WORKDIR /app
+
+# Copy semua file ke dalam folder /app di kontainer
 COPY . .
 
-# Download dependensi dan build aplikasi
-RUN go mod tidy
+# Download semua library (termasuk Gin dan MySQL driver)
+RUN go mod download
+
+# Build aplikasinya dan PAKSA namanya jadi "main"
 RUN go build -o main .
 
-# Run Stage (Menggunakan image ultra-ringan)
-FROM alpine:latest
-
-WORKDIR /app
-
-# Copy hasil build dari stage sebelumnya
-COPY --from=builder /app/main .
-
-# Set default env untuk Azure/Docker (Port dinamis)
-ENV PORT=8080
-
-# Expose port (sebagai dokumentasi)
+# Buka pintu port 8080
 EXPOSE 8080
 
-# Jalankan server
+# Jalankan file "main" yang udah dibikin tadi
 CMD ["./main"]
