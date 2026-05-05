@@ -4,7 +4,6 @@ import (
 	"backend-absensi/config"
 	"backend-absensi/models"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -138,9 +137,5 @@ func main() {
 	})
 
 	// 9. PERBAIKAN PORT UNTUK AZURE
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	r.Run("0.0.0.0:" + port)
+	r.Run("0.0.0.0:8080")
 }
