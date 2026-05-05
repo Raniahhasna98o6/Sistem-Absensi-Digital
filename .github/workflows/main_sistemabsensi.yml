@@ -25,16 +25,16 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: acrtelyu123.azurecr.io/
-          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}
-          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_925C540EF0B04934B67BB7583F1FE0B1 }}
+          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_932BD9B8FA974FEB92DB039C86368EB8 }}
+          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_57066B40619245769BC10C167C1924FB }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
         with:
-          context: ./backend-sean/backend-absensi
+          context: .
           push: true
-          tags: acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}/backend-absensi:${{ github.sha }}
-          file: ./backend-sean/backend-absensi/Dockerfile
+          tags: acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_932BD9B8FA974FEB92DB039C86368EB8 }}/acrtelyu123/backend-absensi:${{ github.sha }}
+          file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,9 +49,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_995FB5A7B3184BE68EAED6792D1C330E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2DF5183DCD2541348DA060236B834E0F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0E6DEC0CA6584983818619A6FA6183B5 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_354608AF07E24267A0427075ED087E64 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2C4E064C50CA43B19073FFC6F178950E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_57B60E45D2A84A11A50BA7C5F0D2E48B }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,4 +59,5 @@ jobs:
         with:
           app-name: 'sistemabsensi'
           slot-name: 'Production'
-          images: 'acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}/backend-absensi:${{ github.sha }}'
+          images: 'acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_932BD9B8FA974FEB92DB039C86368EB8 }}/acrtelyu123/backend-absensi:${{ github.sha }}'
+          
