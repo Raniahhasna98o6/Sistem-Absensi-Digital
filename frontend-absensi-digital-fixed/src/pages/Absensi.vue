@@ -64,44 +64,51 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue' // 1. Tambah ref & onMounted
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios' // 2. Tambah axios
 
 const router = useRouter()
-
-// 3. State untuk menyimpan data matkul dari Azure
+const koordinat = ref({ lat: null, lng: null }) // Variabel penyimpan lokasi
 const matkulHariIni = ref({
   matkul: 'Memuat jadwal...',
   jam: '-',
   ruang: '-'
 })
 
-const back = () => {
-  router.push('/beranda')
-}
-
+// --- LOGIKA AMBIL FOTO ---
 const ambilFoto = () => {
-  // Simpan data matkul yang sedang di-absen ke localStorage untuk dipakai di Preview nanti
-  localStorage.setItem('active_class', JSON.stringify(matkulHariIni.value))
+  // Simpan matkul DAN lokasi sekaligus ke storage
+  const dataAbsen = {
+    ...matkulHariIni.value,
+    lat: koordinat.value.lat,
+    lng: koordinat.value.lng
+  }
+  localStorage.setItem('active_class', JSON.stringify(dataAbsen))
   router.push('/kamera')
 }
 
-// 4. Ambil data asli dari Azure begitu halaman dibuka
-onMounted(async () => {
-  try {
-    const token = localStorage.getItem('token') // Ambil token login tadi
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/today`, {
-      headers: { Authorization: `Bearer ${token}` } // Kirim token ke Azure[cite: 1]
+onMounted(() => {
+  // 1. Ambil Lokasi Mahasiswa Sekarang (Saat Masuk Halaman Absensi)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      koordinat.value.lat = pos.coords.latitude
+      koordinat.value.lng = pos.coords.longitude
+      console.log("Lokasi terkunci:", koordinat.value)
+    }, (err) => {
+      console.error("Gagal dapet GPS:", err)
+      // Fallback kalau GPS mati (buat testing)
+      koordinat.value = { lat: -6.974, lng: 107.630 }
     })
-    
-    // Update data matkul dengan data asli dari database Azure
-    matkulHariIni.value = response.data
-  } catch (error) {
-    console.error('Error fetching schedule:', error)
-    // Fallback data dummy jika server bermasalah
-    matkulHariIni.value = { matkul: 'Jaringan Komputer', jam: '08.00 - 10.00', ruang: 'TULT 0714' }
   }
+
+  // 2. Data Dummy Matkul (Sesuai kode lu sebelumnya)
+  setTimeout(() => {
+    matkulHariIni.value = { 
+      matkul: 'Jaringan Komputer', 
+      jam: '08.00 - 10.00', 
+      ruang: 'TULT 0714' 
+    }
+  }, 500)
 })
 </script>
 
