@@ -59,22 +59,36 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios' // WAJIB ada buat nembak API Logout
 
 // --- INISIALISASI STATE & ROUTER ---
 const router = useRouter()
 const user = ref({
   nama: 'Memuat...',
-  nidn: '...',
-  prodi: '...',
-  fakultas: '...',
-  email: '...',
-  nohp: '...'
+  nidn: 'Menunggu API...', // Nanti disesuaikan kalau Golang lu udah ada endpoint profil
+  prodi: '-',
+  fakultas: '-',
+  email: '-',
+  nohp: '-'
 })
 
-// --- LOGIKA PEMBERSIHAN SESI SAAT KELUAR ---
-const logout = () => {
-  localStorage.clear() // Menghapus token dan data user dari browser
-  router.push('/login')
+// --- LOGIKA PEMBERSIHAN SESI SAAT KELUAR (FULL-STACK) ---
+const logout = async () => {
+  try {
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
+
+    // Tembak API Logout di Golang buat ngehancurin Cookie Azure
+    await axios.post(`${cleanBaseURL}/logout`, {}, {
+      withCredentials: true 
+    })
+  } catch (error) {
+    console.error('Server error saat logout:', error)
+  } finally {
+    // Bersihkan sisa data di browser & tendang balik ke Login Dosen
+    localStorage.clear()
+    router.push('/login?role=dosen')
+  }
 }
 
 const generate = () => {
@@ -83,20 +97,22 @@ const generate = () => {
 
 // --- AMBIL DATA PROFIL SAAT HALAMAN DIMUAT ---
 onMounted(() => {
-  const savedUser = localStorage.getItem('user')
+  // Ambil key yang bener dari sistem login lu
+  const savedUserNama = localStorage.getItem('user_nama')
   const savedRole = localStorage.getItem('role')
 
-  // Validasi: Pastikan hanya dosen yang bisa akses halaman ini
-  if (savedRole !== 'lecturer') {
-    router.push('/login')
+  // Validasi: Terima 'dosen' (baru) atau 'lecturer' (jaga-jaga kalau ada URL nyangkut)
+  if (savedRole !== 'dosen' && savedRole !== 'lecturer') {
+    alert('Akses ditolak! Halaman ini khusus Dosen.')
+    router.push('/login?role=dosen')
     return
   }
 
-  // Load data dari storage hasil login sukses di Azure
-  if (savedUser) {
-    user.value = JSON.parse(savedUser)
+  // Load data dari storage hasil login sukses
+  if (savedUserNama) {
+    user.value.nama = savedUserNama
   } else {
-    router.push('/login')
+    router.push('/login?role=dosen')
   }
 })
 </script>

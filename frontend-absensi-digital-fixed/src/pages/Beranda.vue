@@ -79,24 +79,27 @@ const keRiwayat = () => router.push('/riwayat')
 
 // --- AMBIL DATA USER DARI STORAGE SAAT HALAMAN DIMUAT ---
 onMounted(() => {
-  const savedUser = localStorage.getItem('user')
+  // 1. Ambil key yang BENAR sesuai kodingan Login lu tadi!
+  const savedUserNama = localStorage.getItem('user_nama')
   const savedRole = localStorage.getItem('role')
 
-  // Proteksi: Pastikan hanya mahasiswa yang bisa akses
+  // 2. Proteksi: Kita tadi udah ubah role jadi 'mahasiswa', bukan 'student'
   if (savedRole !== 'student') {
-    router.push('/login')
+    alert('Akses ditolak! Anda bukan mahasiswa.')
+    router.push('/login?role=mahasiswa')
     return
   }
 
-  // Load data hasil sukses login dari database Azure
-  if (savedUser) {
-    user.value = JSON.parse(savedUser)
+  // 3. Load data hasil sukses login dari database Azure
+  if (savedUserNama) {
+    // Nggak perlu JSON.parse karena wujudnya udah pure text string
+    user.value.nama = savedUserNama
   } else {
-    router.push('/login')
+    // Kalau nggak ada nama di storage, lempar balik ke login
+    router.push('/login?role=mahasiswa')
   }
 })
 </script>
-
 <style scoped>
 /* --- KONFIGURASI LAYOUT TELEPON --- */
 .wrapper {
