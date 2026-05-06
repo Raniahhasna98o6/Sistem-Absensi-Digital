@@ -91,7 +91,7 @@ const login = async () => {
     alert('Login Berhasil!')
 
     // 6. Routing Berdasarkan Role User
-    router.push(role === 'lecturer' ? '/beranda-dosen' : '/beranda')
+    router.push(role === 'lecturer' ? '/BerandaDosen' : '/Beranda')
     
   } catch (error) {
     // 7. Penanganan Error
