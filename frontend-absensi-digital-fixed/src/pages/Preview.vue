@@ -95,8 +95,8 @@ const kirim = async () => {
         const response = await axios.post(`${cleanBaseURL}/api/absensi`, {
           image: image.value,
           matkul: activeClass.value.matkul,
-          lat: latAsli, // Dinamis dari GPS
-          lng: lngAsli  // Dinamis dari GPS
+          Latitude: latAsli, // Dinamis dari GPS
+          Longitude: lngAsli  // Dinamis dari GPS
         }, {
           withCredentials: true 
         })

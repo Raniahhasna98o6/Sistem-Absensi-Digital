@@ -38,10 +38,8 @@
 
         <!-- CARD 2 (MAPS) -->
         <div class="card">
-          <iframe
-            src="https://maps.google.com/maps?q=telkom%20university&t=&z=15&ie=UTF8&iwloc=&output=embed"
-            class="map">
-          </iframe>
+          <!-- Ganti iframe dengan div ini -->
+          <div id="map" class="map"></div>
         </div>
 
         <!-- CARD 3 -->
@@ -64,51 +62,59 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const koordinat = ref({ lat: null, lng: null }) // Variabel penyimpan lokasi
-const matkulHariIni = ref({
-  matkul: 'Memuat jadwal...',
-  jam: '-',
-  ruang: '-'
-})
+const koordinat = ref({ lat: -6.974, lng: 107.630 }) // Default Telkom
+let map = null
+let blueDot = null
+let watchId = null
 
-// --- LOGIKA AMBIL FOTO ---
 const ambilFoto = () => {
-  // Simpan matkul DAN lokasi sekaligus ke storage
-  const dataAbsen = {
-    ...matkulHariIni.value,
+  localStorage.setItem('active_class', JSON.stringify({
+    matkul: 'Jaringan Komputer', // Data dummy sesuai tugas kamu
     lat: koordinat.value.lat,
     lng: koordinat.value.lng
-  }
-  localStorage.setItem('active_class', JSON.stringify(dataAbsen))
+  }))
   router.push('/kamera')
 }
 
 onMounted(() => {
-  // 1. Ambil Lokasi Mahasiswa Sekarang (Saat Masuk Halaman Absensi)
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      koordinat.value.lat = pos.coords.latitude
-      koordinat.value.lng = pos.coords.longitude
-      console.log("Lokasi terkunci:", koordinat.value)
-    }, (err) => {
-      console.error("Gagal dapet GPS:", err)
-      // Fallback kalau GPS mati (buat testing)
-      koordinat.value = { lat: -6.974, lng: 107.630 }
-    })
-  }
+  // 1. Inisialisasi Peta Leaflet
+  map = L.map('map').setView([koordinat.value.lat, koordinat.value.lng], 17);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 
-  // 2. Data Dummy Matkul (Sesuai kode lu sebelumnya)
-  setTimeout(() => {
-    matkulHariIni.value = { 
-      matkul: 'Jaringan Komputer', 
-      jam: '08.00 - 10.00', 
-      ruang: 'TULT 0714' 
-    }
-  }, 500)
+  // 2. Buat "Titik Biru" Kustom
+  blueDot = L.circleMarker([koordinat.value.lat, koordinat.value.lng], {
+    radius: 8,
+    fillColor: '#2196F3', // Warna biru Google Maps
+    color: 'white',
+    weight: 2,
+    fillOpacity: 1
+  }).addTo(map);
+
+  // 3. Pantau Lokasi Mahasiswa secara Real-Time
+  if (navigator.geolocation) {
+    watchId = navigator.geolocation.watchPosition((pos) => {
+      const { latitude, longitude } = pos.coords
+      koordinat.value = { lat: latitude, lng: longitude }
+
+      // Update posisi titik biru dan fokus kamera peta
+      blueDot.setLatLng([latitude, longitude])
+      map.setView([latitude, longitude])
+    }, (err) => {
+      console.error("GPS Error:", err)
+    }, { enableHighAccuracy: true });
+  }
+})
+
+// Bersihkan sensor GPS saat pindah halaman agar baterai HP tidak boros
+onUnmounted(() => {
+  if (watchId) navigator.geolocation.clearWatch(watchId)
 })
 </script>
 
@@ -221,8 +227,9 @@ onMounted(() => {
 /* MAP */
 .map {
   width: 100%;
-  height: 180px;
+  height: 200px;
   border-radius: 15px;
+  z-index: 1;
   border: none;
 }
 

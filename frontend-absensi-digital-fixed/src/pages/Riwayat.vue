@@ -1,53 +1,54 @@
 <template>
   <div class="wrapper">
     <div class="phone">
-
-      <!-- HEADER & NAVIGASI -->
-      <div class="header">
-        <span class="back" @click="back">←</span>
-        <h3>Riwayat Absensi</h3>
+      
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <span @click="back">←</span>
+        <h3>Riwayat Kehadiran</h3>
       </div>
 
-      <!-- FILTER STATUS (SEMUA, HADIR, TIDAK) -->
-      <div class="filter">
-        <button 
-          :class="['tab', active === 'semua' && 'active']"
-          @click="active = 'semua'"
-        >
-          Semua
-        </button>
-        <button 
-          :class="['tab', active === 'hadir' && 'active']"
-          @click="active = 'hadir'"
-        >
-          Hadir
-        </button>
-        <button 
-          :class="['tab', active === 'tidak' && 'active']"
-          @click="active = 'tidak'"
-        >
-          Tidak Hadir
-        </button>
-      </div>
-
-      <!-- LIST RIWAYAT HASIL FILTER -->
       <div class="content">
-        <div 
-          v-for="(item, index) in filteredData" 
-          :key="index"
-          class="card"
-        >
-          <div class="row">
-            <div class="icon">📅</div>
-            <div class="text">
+        <!-- FILTER TABS -->
+        <div class="tabs">
+          <button 
+            :class="{ active: active === 'semua' }" 
+            @click="active = 'semua'"
+          >Semua</button>
+          <button 
+            :class="{ active: active === 'hadir' }" 
+            @click="active = 'hadir'"
+          >Hadir</button>
+          <button 
+            :class="{ active: active === 'tidak' }" 
+            @click="active = 'tidak'"
+          >Tidak Hadir</button>
+        </div>
+
+        <!-- DAFTAR RIWAYAT -->
+        <div class="list-container">
+          <div v-if="filteredData.length === 0" class="empty">
+            <p>Belum ada riwayat absen.</p>
+          </div>
+
+          <div 
+            v-for="(item, index) in filteredData" 
+            :key="index" 
+            class="history-card"
+          >
+            <div class="card-info">
               <p class="matkul">{{ item.matkul }}</p>
-              <p class="ruang">{{ item.ruang }}</p>
-              <p class="jam">{{ item.jam }}</p>
+              <p class="detail">{{ item.jam }} | {{ item.ruang }}</p>
+            </div>
+            <div :class="['status-badge', item.status]">
+              {{ item.status === 'hadir' ? 'Hadir' : 'Tidak Hadir' }}
             </div>
           </div>
         </div>
+
       </div>
 
+      <div class="bottom-spacer"></div>
     </div>
   </div>
 </template>
@@ -73,28 +74,29 @@ const filteredData = computed(() => {
 // --- AMBIL DATA RIWAYAT DARI AZURE ---
 onMounted(async () => {
   try {
-    const token = localStorage.getItem('token')
-    // Menggunakan domain: sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/history`, {
-      headers: { Authorization: `Bearer ${token}` }
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
+
+    const response = await axios.get(`${cleanBaseURL}/api/absensi/riwayat`, {
+      withCredentials: true // Menggunakan Cookie nim_user sesuai backend lu
     })
     data.value = response.data
   } catch (error) {
     console.error('Gagal mengambil data:', error)
-    // Fallback data jika server offline
+    // Fallback data simulasi
     data.value = [
       { matkul: 'Jaringan Komputer', ruang: 'TULT 0714', jam: '08.00 - 10.00', status: 'hadir' },
-      { matkul: 'Basis Data', ruang: 'LAB 02', jam: '10.00 - 12.00', status: 'tidak' }
+      { matkul: 'Basis Data', ruang: 'LAB 02', jam: '10.00 - 12.00', status: 'tidak' },
+      { matkul: 'Kecerdasan Buatan', ruang: 'TULT 0501', jam: '13.00 - 15.00', status: 'hadir' }
     ]
   }
 })
 </script>
 
 <style scoped>
-/* --- LAYOUT UTAMA --- */
 .wrapper {
+  background: #0f172a;
   min-height: 100vh;
-  background: #0f1c2e;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,96 +104,92 @@ onMounted(async () => {
 
 .phone {
   width: 390px;
-  height: 800px;
-  background: #f5f5f5;
+  height: 780px;
+  background: #f8fafc;
   border-radius: 30px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-/* --- TAMPILAN HEADER --- */
-.header {
+.topbar {
+  padding: 20px;
+  background: white;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px;
-  background: white;
+  gap: 15px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.header h3 {
-  font-weight: 700;
-  font-size: 18px;
-  color: black;
-}
+.topbar span { font-size: 24px; cursor: pointer; }
+.topbar h3 { font-weight: 700; font-size: 18px; margin: 0; }
 
-.back {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* --- TAB FILTER --- */
-.filter {
-  display: flex;
-  gap: 10px;
-  padding: 14px 16px;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1.5px solid #ff3b30;
-  background: white;
-  color: #ff3b30;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.tab.active {
-  background: #ff3b30;
-  color: white;
-}
-
-/* --- KONTEN & KARTU --- */
 .content {
-  padding: 16px;
+  flex: 1;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
+  overflow-y: auto;
 }
 
-.card {
-  background: #ff3b30;
-  color: white;
-  padding: 16px;
-  border-radius: 18px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-}
-
-.row {
+/* TABS */
+.tabs {
   display: flex;
-  align-items: flex-start;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  background: transparent;
+  transition: 0.3s;
+}
+
+.tabs button.active {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #ff2d2d;
+}
+
+/* HISTORY CARD */
+.list-container {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.icon {
-  font-size: 30px;
-}
-
-.text {
+.history-card {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.matkul {
-  font-size: 16px;
+.matkul { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.detail { font-size: 12px; color: #64748b; }
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
-.ruang, .jam {
-  font-size: 14px;
-  margin-top: 2px;
-}
+.status-badge.hadir { background: #dcfce7; color: #166534; }
+.status-badge.tidak { background: #fee2e2; color: #991b1b; }
+
+.empty { text-align: center; color: #94a3b8; margin-top: 40px; }
+.bottom-spacer { height: 20px; background: #f8fafc; }
 </style>
