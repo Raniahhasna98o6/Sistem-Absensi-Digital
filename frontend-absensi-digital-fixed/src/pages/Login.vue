@@ -31,51 +31,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios' 
-import logo from '../assets/logo.png'
-
-// --- INISIALISASI ROUTING & STATE ---
-const email = ref('')
-const password = ref('')
-const router = useRouter()
-const route = useRoute()
-const role = route.query.role || '' 
-
-// --- LOGIKA NAVIGASI KE REGISTER ---
-const goToRegister = () => {
-  router.push({
-    path: '/register',
-    query: { role }
-  })
-}
-
 // --- PROSES AUTENTIKASI KE SERVER AZURE ---
 const login = async () => {
   // 1. Validasi Input Lokal
   if (!role) return alert('Pilih role terlebih dahulu!')
   if (!email.value || !password.value) return alert('Email dan password wajib diisi!')
 
-  // 2. Proteksi Domain Email (Client-side Defense)
-  const domain = role === 'lecturer' ? '@lecturer.university.ac.id' : '@student.university.ac.id'
+  // 2. Proteksi Domain Email (Disesuaikan dengan data Telkom University)
+  // Kalau email dosen beda, sesuaikan aja tulisan '@telkomuniversity.ac.id' nya
+  const domain = role === 'lecturer' ? '@telkomuniversity.ac.id' : '@student.telkomuniversity.ac.id'
   if (!email.value.endsWith(domain)) {
-    alert(`Gunakan email resmi ${role}!`)
+    alert(`Gunakan email resmi institusi untuk ${role}!`)
     return
   }
 
   try {
-    // 3. Eksekusi Request Menggunakan Variabel .env
-    // URL Akhir: https://sistemabsensi...azurewebsites.net/login
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
+    // 3. Eksekusi Request: Dinamis milih rute Golang lu
+    const endpoint = role === 'lecturer' ? '/login/dosen' : '/login/mahasiswa'
+    
+    // PERBAIKAN KRUSIAL: Tambahkan withCredentials supaya Cookie dari Azure bisa masuk!
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       email: email.value,
-      password: password.value,
-      role: role
+      password: password.value
+      // Note: role ga perlu dikirim ke backend karena URL-nya udah beda
+    }, {
+      withCredentials: true 
     })
 
-    // 4. Manajemen Session (Simpan Token & User Data)
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('user', JSON.stringify(response.data.user))
+    // 4. Manajemen Session: Cuma simpan nama dan role, urusan autentikasi udah dipegang Cookie
+    localStorage.setItem('user_nama', response.data.nama) // Golang ngirim parameter 'nama'
     localStorage.setItem('role', role)
 
     alert('Login Berhasil!')
@@ -86,7 +70,8 @@ const login = async () => {
   } catch (error) {
     // 6. Penanganan Error Koneksi/Server
     console.error('Login Error:', error)
-    alert(error.response?.data?.message || 'Gagal terhubung ke server Azure!')
+    // Golang lu ngirim pesan error dengan key 'error', bukan 'message' pas gagal login
+    alert(error.response?.data?.error || 'Gagal terhubung ke server Azure!')
   }
 }
 </script>
