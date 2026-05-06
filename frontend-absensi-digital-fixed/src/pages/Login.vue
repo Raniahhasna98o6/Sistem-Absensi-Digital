@@ -41,7 +41,10 @@ const email = ref('')
 const password = ref('')
 const router = useRouter()
 const route = useRoute()
-const role = route.query.role || '' 
+
+// Ambil role dari URL (misal: /login?role=student)
+// Kalau kosong, kita set default ke 'student' biar formnya gak langsung error
+const role = route.query.role || 'student' 
 
 // --- LOGIKA NAVIGASI KE REGISTER ---
 const goToRegister = () => {
@@ -54,10 +57,9 @@ const goToRegister = () => {
 // --- PROSES AUTENTIKASI KE SERVER AZURE ---
 const login = async () => {
   // 1. Validasi Input Lokal
-  if (!role) return alert('Pilih role terlebih dahulu!')
   if (!email.value || !password.value) return alert('Email dan password wajib diisi!')
 
-  // 2. Proteksi Domain Email 
+  // 2. Proteksi Domain Email (Sesuai kampus Telkom University)
   const domain = role === 'lecturer' ? '@telkomuniversity.ac.id' : '@student.telkomuniversity.ac.id'
   if (!email.value.endsWith(domain)) {
     alert(`Gunakan email resmi institusi untuk ${role}!`)
@@ -65,29 +67,36 @@ const login = async () => {
   }
 
   try {
-    // 3. Eksekusi Request: Dinamis milih rute Golang lu
+    // 3. Eksekusi Request dengan Fallback URL Azure (Anti-Gagal Netlify)
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    
+    // Pastikan nggak ada double slash pas URL digabung
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
     const endpoint = role === 'lecturer' ? '/login/dosen' : '/login/mahasiswa'
     
-    // PERBAIKAN KRUSIAL: Tambahkan withCredentials supaya Cookie dari Azure bisa masuk!
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+    const finalURL = `${cleanBaseURL}${endpoint}`
+
+    // 4. Kirim Request ke Backend Golang
+    const response = await axios.post(finalURL, {
       email: email.value,
       password: password.value
     }, {
-      withCredentials: true 
+      withCredentials: true // WAJIB supaya Azure bisa ngasih Cookie 'nim_user'
     })
 
-    // 4. Manajemen Session
+    // 5. Manajemen Session Lokal
     localStorage.setItem('user_nama', response.data.nama) 
     localStorage.setItem('role', role)
 
     alert('Login Berhasil!')
 
-    // 5. Routing Berdasarkan Role User
+    // 6. Routing Berdasarkan Role User
     router.push(role === 'lecturer' ? '/beranda-dosen' : '/beranda')
     
   } catch (error) {
-    // 6. Penanganan Error Koneksi/Server
+    // 7. Penanganan Error
     console.error('Login Error:', error)
+    // Tampilkan pesan error spesifik dari Golang lu (misal: "Email atau Password salah")
     alert(error.response?.data?.error || 'Gagal terhubung ke server Azure!')
   }
 }
