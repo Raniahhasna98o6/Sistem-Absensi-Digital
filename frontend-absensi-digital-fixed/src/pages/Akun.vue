@@ -72,54 +72,71 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue' // 1. Tambah ref & onMounted
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios' // 2. Tambah axios
+import axios from 'axios'
 
 const router = useRouter()
 
-// 3. State untuk simpan data user asli dari database
+// 1. State awal, disesuaikan karena backend lu belum ngirim data lengkap
 const user = ref({
   nama: 'Memuat...',
-  nim: '...',
-  prodi: '...',
-  fakultas: '...',
-  angkatan: '...',
-  email: '...',
-  nohp: '...'
+  nim: 'Menunggu API...', // Harus bikin API di Golang buat ini
+  prodi: '-',
+  fakultas: '-',
+  angkatan: '-',
+  email: '-',
+  nohp: '-'
 })
 
 const back = () => {
-  router.push('/beranda')
+  router.push('/Beranda')
 }
 
-// 4. Logout wajib hapus semua data di browser biar aman
-const logout = () => {
-  localStorage.clear() // Hapus token & info user
-  router.push('/login')
+// 2. Logika Logout Full-Stack (Lokal + Server Azure)
+const logout = async () => {
+  try {
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
+
+    // Tembak API Logout di Golang buat ngehancurin Cookie!
+    await axios.post(`${cleanBaseURL}/logout`, {}, {
+      withCredentials: true // Wajib supaya Azure ngebaca Cookie mana yang mau dihancurin
+    })
+  } catch (error) {
+    console.error('Server error saat logout:', error)
+  } finally {
+    // 3. Bersihkan sisa data di browser & tendang ke Login
+    localStorage.clear()
+    router.push('/login?role=mahasiswa')
+  }
 }
 
-// 5. Ambil data profil begitu halaman dibuka[cite: 1, 8]
-onMounted(async () => {
-  const savedUser = localStorage.getItem('user')
-  const token = localStorage.getItem('token')
+// 4. Ambil data profil dari sistem yang udah kita bangun
+onMounted(() => {
+  const savedUserNama = localStorage.getItem('user_nama')
+  const savedRole = localStorage.getItem('role')
 
-  // Prioritas 1: Ambil data yang tadi disimpen pas login di Login_2.vue
-  if (savedUser) {
-    user.value = JSON.parse(savedUser)
-  } else if (token) {
-    // Prioritas 2: Kalau ga ada di storage, minta langsung ke Azure pake token[cite: 1]
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      user.value = response.data
-    } catch (error) {
-      console.error('Gagal ambil profil:', error)
-      router.push('/login')
-    }
+  // Proteksi ganda (terima 'mahasiswa' atau 'student')
+  if (savedRole !== 'mahasiswa' && savedRole !== 'student') {
+    router.push('/login?role=mahasiswa')
+    return
+  }
+
+  // Load nama dari storage hasil login tadi
+  if (savedUserNama) {
+    user.value.nama = savedUserNama
+    
+    /* 
+      NOTE PENTING: 
+      Saat ini Golang lu di main.go BELUM PUNYA rute buat ngambil profil lengkap (NIM, Prodi, dll).
+      Kalau lu mau data profilnya lengkap, lu harus bikin rute GET "/api/profil" di Golang, 
+      terus tembak pakai Axios di sini pakai { withCredentials: true }.
+      Untuk sementara, kita tampilin namanya aja dulu biar nggak error!
+    */
+    
   } else {
-    router.push('/login') // Tendang ke login kalau ga punya akses
+    router.push('/login?role=mahasiswa')
   }
 })
 </script>

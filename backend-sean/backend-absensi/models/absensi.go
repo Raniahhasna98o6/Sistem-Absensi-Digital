@@ -2,6 +2,7 @@ package models
 
 import (
 	"backend-absensi/config"
+	"fmt"
 	"math"
 	"time"
 )
@@ -17,9 +18,9 @@ type Absensi struct {
 }
 
 const (
-	TelyuLat  = -6.974001
-	TelyuLon  = 107.630339
-	MaxRadius = 400.0
+	TelyuLat  = -6.974490
+	TelyuLon  = 107.630350
+	MaxRadius = 800.0
 )
 
 func (a *Absensi) CekRadiusLokasi() bool {
@@ -37,6 +38,9 @@ func (a *Absensi) CekRadiusLokasi() bool {
 
 	c := 2 * math.Atan2(math.Sqrt(x), math.Sqrt(1-x))
 	jarak := R * c
+
+	fmt.Printf("JARAK TERDETEKSI: %f meter dari kampus\n", jarak)
+	fmt.Printf("LAT USER: %f, LON USER: %f\n", a.Latitude, a.Longitude)
 
 	return jarak <= MaxRadius
 }

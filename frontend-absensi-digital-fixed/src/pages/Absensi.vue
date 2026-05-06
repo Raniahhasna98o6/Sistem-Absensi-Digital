@@ -38,10 +38,8 @@
 
         <!-- CARD 2 (MAPS) -->
         <div class="card">
-          <iframe
-            src="https://maps.google.com/maps?q=telkom%20university&t=&z=15&ie=UTF8&iwloc=&output=embed"
-            class="map">
-          </iframe>
+          <!-- Ganti iframe dengan div ini -->
+          <div id="map" class="map"></div>
         </div>
 
         <!-- CARD 3 -->
@@ -64,44 +62,59 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue' // 1. Tambah ref & onMounted
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios' // 2. Tambah axios
 
 const router = useRouter()
-
-// 3. State untuk menyimpan data matkul dari Azure
-const matkulHariIni = ref({
-  matkul: 'Memuat jadwal...',
-  jam: '-',
-  ruang: '-'
-})
-
-const back = () => {
-  router.push('/beranda')
-}
+const koordinat = ref({ lat: -6.974, lng: 107.630 }) // Default Telkom
+let map = null
+let blueDot = null
+let watchId = null
 
 const ambilFoto = () => {
-  // Simpan data matkul yang sedang di-absen ke localStorage untuk dipakai di Preview nanti
-  localStorage.setItem('active_class', JSON.stringify(matkulHariIni.value))
+  localStorage.setItem('active_class', JSON.stringify({
+    matkul: 'Jaringan Komputer', // Data dummy sesuai tugas kamu
+    lat: koordinat.value.lat,
+    lng: koordinat.value.lng
+  }))
   router.push('/kamera')
 }
 
-// 4. Ambil data asli dari Azure begitu halaman dibuka
-onMounted(async () => {
-  try {
-    const token = localStorage.getItem('token') // Ambil token login tadi
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/attendance/today`, {
-      headers: { Authorization: `Bearer ${token}` } // Kirim token ke Azure[cite: 1]
-    })
-    
-    // Update data matkul dengan data asli dari database Azure
-    matkulHariIni.value = response.data
-  } catch (error) {
-    console.error('Error fetching schedule:', error)
-    // Fallback data dummy jika server bermasalah
-    matkulHariIni.value = { matkul: 'Jaringan Komputer', jam: '08.00 - 10.00', ruang: 'TULT 0714' }
+onMounted(() => {
+  // 1. Inisialisasi Peta Leaflet
+  map = L.map('map').setView([koordinat.value.lat, koordinat.value.lng], 17);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // 2. Buat "Titik Biru" Kustom
+  blueDot = L.circleMarker([koordinat.value.lat, koordinat.value.lng], {
+    radius: 8,
+    fillColor: '#2196F3', // Warna biru Google Maps
+    color: 'white',
+    weight: 2,
+    fillOpacity: 1
+  }).addTo(map);
+
+  // 3. Pantau Lokasi Mahasiswa secara Real-Time
+  if (navigator.geolocation) {
+    watchId = navigator.geolocation.watchPosition((pos) => {
+      const { latitude, longitude } = pos.coords
+      koordinat.value = { lat: latitude, lng: longitude }
+
+      // Update posisi titik biru dan fokus kamera peta
+      blueDot.setLatLng([latitude, longitude])
+      map.setView([latitude, longitude])
+    }, (err) => {
+      console.error("GPS Error:", err)
+    }, { enableHighAccuracy: true });
   }
+})
+
+// Bersihkan sensor GPS saat pindah halaman agar baterai HP tidak boros
+onUnmounted(() => {
+  if (watchId) navigator.geolocation.clearWatch(watchId)
 })
 </script>
 
@@ -214,8 +227,9 @@ onMounted(async () => {
 /* MAP */
 .map {
   width: 100%;
-  height: 180px;
+  height: 200px;
   border-radius: 15px;
+  z-index: 1;
   border: none;
 }
 

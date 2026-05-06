@@ -70,27 +70,59 @@ onMounted(() => {
 })
 
 // --- KIRIM DATA ABSENSI KE BACKEND AZURE ---
+// --- KIRIM DATA ABSENSI KE BACKEND AZURE DENGAN GPS ASLI ---
 const kirim = async () => {
-  try {
-    const token = localStorage.getItem('token')
-    
-    // Domain: sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net
-    await axios.post(`${import.meta.env.VITE_API_URL}/attendance/submit`, {
-      image: image.value,
-      matkul: activeClass.value.matkul,
-      lat: -6.974, // Koordinat statis (bisa diganti GPS API nanti)
-      lng: 107.630
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    // Bersihkan memori storage setelah berhasil
-    localStorage.removeItem('captured_photo')
-    router.push('/success')
-  } catch (error) {
-    console.error('Gagal kirim absen:', error)
-    alert('Gagal mengirim absensi ke server Azure. Coba lagi!')
+  // 1. Cek apakah browser support GPS
+  if (!navigator.geolocation) {
+    alert("Waduh, browser lu nggak support fitur lokasi (GPS), Sean!")
+    return
   }
+
+  // Tampilkan loading kalau perlu, karena ambil posisi GPS butuh waktu 1-3 detik
+  console.log("Sedang mengambil lokasi presisi...")
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        // Ambil koordinat asli dari hardware GPS
+        const latAsli = position.coords.latitude
+        const lngAsli = position.coords.longitude
+
+        const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+        const cleanBaseURL = baseURL.replace(/\/$/, "")
+
+        // 2. Kirim ke API Golang dengan data GPS yang akurat
+        const response = await axios.post(`${cleanBaseURL}/api/absensi`, {
+          image: image.value,
+          matkul: activeClass.value.matkul,
+          Latitude: latAsli, // Dinamis dari GPS
+          Longitude: lngAsli  // Dinamis dari GPS
+        }, {
+          withCredentials: true 
+        })
+
+        // Bersihkan storage dan pindah ke halaman sukses
+        localStorage.removeItem('captured_photo')
+        localStorage.removeItem('active_class')
+        router.push('/success')
+
+      } catch (error) {
+        console.error('Gagal kirim absen:', error)
+        // Kalau gagal karena radius, pesan "Gagal! Anda berada di luar radius kampus!" bakal muncul di sini
+        alert(error.response?.data?.message || 'Terjadi kesalahan pada server Azure.')
+      }
+    },
+    (error) => {
+      // Handle jika user menolak (Deny) izin lokasi
+      console.error('Error GPS:', error)
+      alert("Gagal ambil lokasi! Pastikan GPS HP nyala dan kasih izin 'Allow' di browser.")
+    },
+    {
+      enableHighAccuracy: true, // Pakai GPS beneran, bukan cuma sinyal tower
+      timeout: 5000,            // Maksimal nunggu 5 detik
+      maximumAge: 0             // Jangan pakai lokasi lama yang tersimpan di cache
+    }
+  )
 }
 </script>
 

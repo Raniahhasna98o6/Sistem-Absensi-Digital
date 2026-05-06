@@ -14,10 +14,21 @@ func main() {
 
 	r := gin.Default()
 
-	// --- 1. JEMBATAN CORS (WAJIB UNTUK BEDA DOMAIN NETLIFY -> AZURE) ---
+	// --- 1. JEMBATAN CORS (VERSI DINAMIS UNTUK VERCEL & LOCALHOST) ---
 	r.Use(func(c *gin.Context) {
-		// PENTING: Ganti dengan URL Netlify kamu yang asli (tanpa garis miring / di akhir)
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://NAMA-WEB-LU.netlify.app")
+		origin := c.Request.Header.Get("Origin")
+
+		// Daftar URL yang lu kasih izin buat nembak ke Azure
+		allowedOrigins := map[string]bool{
+			"http://localhost:5173":            true, // Untuk ngetes di laptop lu
+			"https://absensisistem.vercel.app": true, // Link Vercel (PASTIKAN TANPA GARIS MIRING DI AKHIR)
+		}
+
+		// Kalau Origin dari request ada di daftar atas, kasih izin
+		if allowedOrigins[origin] {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
@@ -47,7 +58,6 @@ func main() {
 
 		m := models.Mahasiswa{}
 		if m.Login(req.Email, req.Password) {
-			// PERBAIKAN COOKIE AZURE: SameSiteNoneMode dan secure=true, hapus "localhost"
 			c.SetSameSite(http.SameSiteNoneMode)
 			c.SetCookie("nim_user", m.NIM, 3600, "/", "", true, true)
 			c.JSON(http.StatusOK, gin.H{"message": "Login Mahasiswa Berhasil", "nama": m.Nama})
@@ -97,7 +107,6 @@ func main() {
 
 		d := models.Dosen{}
 		if d.Login(req.Email, req.Password) {
-			// PERBAIKAN COOKIE AZURE
 			c.SetSameSite(http.SameSiteNoneMode)
 			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "", true, true)
 			c.JSON(http.StatusOK, gin.H{"message": "Login Dosen Berhasil", "nama": d.Nama})

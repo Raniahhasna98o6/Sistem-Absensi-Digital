@@ -34,7 +34,7 @@ const routes = [
     component: Beranda
   },
   {
-  path: '/beranda-dosen',
+  path: '/BerandaDosen',
   component: BerandaDosen
   },
   {
