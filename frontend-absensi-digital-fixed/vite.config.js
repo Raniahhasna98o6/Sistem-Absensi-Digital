@@ -1,7 +1,12 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import vue from '@vue/dist/vue.esm-bundler.js' // atau import vue biasa tergantung setup lu
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    // Tambahin ini biar Ngrok diizinin masuk
+    allowedHosts: ['brisket-simply-chafe.ngrok-free.dev'] 
+    // Atau kalau mau bebas (buat testing):
+    // allowedHosts: 'all'
+  }
 })
