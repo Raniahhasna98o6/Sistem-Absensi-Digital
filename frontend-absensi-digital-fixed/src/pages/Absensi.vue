@@ -4,7 +4,7 @@
 
       <!-- TOPBAR -->
       <div class="topbar">
-        <span @click="back">←</span>
+        <span class="back" @click="back">←</span>
         <h3>Absensi Kuliah</h3>
       </div>
 
@@ -64,6 +64,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+
+const goBack = () => {
+  router.push('/absensi')
+}
 
 const router = useRouter()
 const koordinat = ref({ lat: -6.974, lng: 107.630 }) // Default Telkom
@@ -140,6 +144,12 @@ onUnmounted(() => {
   flex-direction: column;
 }
 
+.back {
+  font-size: 22px;
+  cursor: pointer;
+  color: #000;
+}
+
 /* TOPBAR */
 .topbar {
   padding: 15px;
@@ -178,7 +188,7 @@ onUnmounted(() => {
   box-shadow: 0 10px 20px rgba(0,0,0,0.25);
 }
 
-/* 🔥 FIX JUDUL (INI YANG DIPERBAIKI) */
+/* FIX JUDUL (INI YANG DIPERBAIKI) */
 .judul {
   font-size: 22px;
   font-weight: 700;
