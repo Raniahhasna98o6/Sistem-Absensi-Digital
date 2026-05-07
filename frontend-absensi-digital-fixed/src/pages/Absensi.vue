@@ -4,7 +4,7 @@
 
       <!-- TOPBAR -->
       <div class="topbar">
-        <span class="back" @click="back">←</span>
+        <span class="back" @click="goBack">←</span>
         <h3>Absensi Kuliah</h3>
       </div>
 
