@@ -16,13 +16,13 @@
         <!-- SELEKSI DOSEN -->
         <div class="card" :class="{ 'selected': role === 'lecturer' }" @click="selectRole('lecturer')">
           <h2 style="color: cadetblue;">Lecturer</h2>
-          <p>@lecturer.university.ac.id</p>
+          <p>@telkomuniversity.ac.id</p>
         </div>
 
         <!-- SELEKSI MAHASISWA -->
         <div class="card" :class="{ 'selected': role === 'student' }" @click="selectRole('student')">
           <h2 style="color: cadetblue;">Student</h2>
-          <p>@student.university.ac.id</p>
+          <p>@student.telkomuniversity.ac.id</p>
         </div>
 
         <button :disabled="!role" @click="goToLogin">
@@ -117,7 +117,7 @@ const goToLogin = () => {
   padding: 18px;
   border-radius: 15px;
   border: 1px solid #ddd;
-  background: #f5f5f5;
+  background: #f6f6f6;
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
