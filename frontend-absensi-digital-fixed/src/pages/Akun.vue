@@ -207,10 +207,10 @@ onMounted(() => {
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
-/* 🔥 CARD FIX UTAMA */
+/* CARD FIX UTAMA */
 .card {
   width: 100%;
-  max-width: 330px; /* 🔥 BATASIN BIAR GA NEMPEL */
+  max-width: 330px;
   background: white;
   border-radius: 18px;
   padding: 20px;
@@ -258,13 +258,13 @@ onMounted(() => {
   width: 100%;
   max-width: 330px; /* 🔥 BIAR SEJAJAR CARD */
   padding: 16px;
-  background: white;
+  background: red;
   border-radius: 16px;
-  border: 2px solid #ff3b30;
-  color: #ff3b30;
+  border: 1px solid red;
+  color: white;
   font-weight: 700;
   font-size: 20px;
   margin-top: 20px;
+  box-shadow: 0 6px 12px rgba(255,0,0,0.3);
 }
-
 </style>

@@ -66,7 +66,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const goBack = () => {
-  router.push('/absensi')
+  router.push('/beranda')
 }
 
 const router = useRouter()

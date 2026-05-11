@@ -121,8 +121,8 @@ onMounted(async () => {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.topbar span { font-size: 24px; cursor: pointer; }
-.topbar h3 { font-weight: 700; font-size: 18px; margin: 0; }
+.topbar span { font-size: 24px; cursor: pointer; color: #0f172a; }
+.topbar h3 { font-weight: 700; font-size: 18px; color: #0f172a; margin: 0; }
 
 .content {
   flex: 1;
@@ -156,7 +156,7 @@ onMounted(async () => {
 .tabs button.active {
   background: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  color: #ff2d2d;
+  color: #dc2626;
 }
 
 /* HISTORY CARD */
