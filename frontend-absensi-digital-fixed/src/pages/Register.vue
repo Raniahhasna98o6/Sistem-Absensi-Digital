@@ -18,25 +18,63 @@
 
         <!-- INPUT KHUSUS MAHASISWA -->
         <div v-if="role === 'student'">
-          <input v-model="nama" placeholder="Nama Lengkap" />
-          <input v-model="nim" placeholder="NIM" />
-          <input v-model="prodi" placeholder="Program Studi" />
-          <input v-model="fakultas" placeholder="Fakultas" />
-          <input v-model="angkatan" placeholder="Tahun Angkatan" />
-          <input v-model="email" placeholder="Email" />
-          <input v-model="nohp" placeholder="No HP" />
+          <div class="input-group">
+            <input v-model="nama" />
+            <label for="nama">Nama Lengkap</label>
+          </div>
+          <div class="input-group">
+            <input v-model="nim" />
+            <label for="nim">NIM</label>
+          </div>
+          <div class="input-group">
+            <input v-model="prodi" />
+            <label for="prodi">Program Studi</label>
+          </div>
+          <div class="input-group">
+            <input v-model="fakultas" />
+            <label for="fakultas">Fakultas</label>
+          </div>
+          <div class="input-group">
+            <input v-model="angkatan" />
+            <label for="angkatan">Tahun Angkatan</label>
+          </div>
+          <div class="input-group">
+            <input v-model="email" />
+            <label for="email">Email</label>
+          </div>
+          <div class="input-group">
+            <input v-model="nohp" />
+            <label for="nohp">No HP</label>
+          </div>
         </div>
 
         <!-- INPUT KHUSUS DOSEN -->
         <div v-if="role === 'lecturer'">
-          <input v-model="nama" placeholder="Nama Lengkap" />
-          <input v-model="nidn" placeholder="NIDN" />
-          <input v-model="email" placeholder="Email" />
-          <input v-model="nohp" placeholder="No HP" />
-          <input v-model="fakultas" placeholder="Fakultas" />
+          <div class="input-group">
+             <input v-model="nama" />
+             <label for="nama">Nama Lengkap</label>
+          </div>
+          <div class="input-group">
+            <input v-model="nidn" />
+            <label for="nidn">NIDN</label>
+          </div>
+          <div class="input-group">
+            <input v-model="email" />
+            <label for="email">Email</label>
+          </div>
+          <div class="input-group">
+            <input v-model="nohp" />
+            <label for="nohp">No HP</label>
+          </div>
+          <div class="input-group">
+            <input v-model="fakultas" />
+            <label for="fakultas">Fakultas</label>
+          </div>
         </div>
-
-        <input type="password" v-model="password" placeholder="Password" />
+        <div class="input-group">
+          <input type="text" v-model="password" placeholder="Password" />
+          <label for="password">Password</label>
+        </div>
 
         <button @click="register">REGISTER</button>
 
@@ -150,14 +188,39 @@ const goToLogin = () => {
   padding: 25px;
 }
 
-input {
-  width: 90%;
-  padding: 14px;
-  margin-bottom: 12px;
+.input-group {
+  position: relative;
+  width: 320px;
+  margin-bottom: 15px;
+}
+.input-group input {
+  width: 100%;
+  padding: 14px 10px;
+  font-size: 14px;
+  border: 1px solid black;
+  background-color: white;
   border-radius: 12px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  color: #000000;
+  outline: none;
+  margin-bottom: 0px;
+  color:#0f172a;
+}
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: white;
+  padding: 0 5px;
+  color: #999;
+  font-size: 12px;
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+}
+.input-group input:focus + label,
+.input-group input:valid+label {
+  top: -1px;
+  font-size: 10px;
+  color: #2f80ed;
 }
 
 button {

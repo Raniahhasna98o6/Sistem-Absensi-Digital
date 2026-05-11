@@ -15,8 +15,14 @@
 
       <!-- FORM INPUT & AKSI -->
       <div class="form">
-        <input type="text" placeholder="Email" v-model="email" />
-        <input type="password" placeholder="Password" v-model="password" />
+        <div class="input-group">
+          <input type="text" v-model="email" required />
+          <label for="email">Email</label>
+        </div>
+        <div class="input-group">
+          <input type="password" v-model="password" required />
+          <label for="password">Password</label>
+        </div>
 
         <button @click="login">LOGIN</button>
 
@@ -24,6 +30,10 @@
           Don’t have an account?
           <span @click="goToRegister">Sign up</span>
         </p>
+
+        <button style="width: 60%;" @click="goToRole">
+          Back to Role Selection
+        </button>
       </div>
 
     </div>
@@ -45,6 +55,11 @@ const route = useRoute()
 // Ambil role dari URL (misal: /login?role=student)
 // Kalau kosong, kita set default ke 'student' biar formnya gak langsung error
 const role = route.query.role || 'student' 
+
+// --- LOGIKA NAVIGASI KE ROLE SELECTION ---
+const goToRole = () => {
+  router.push('/role')
+}
 
 // --- LOGIKA NAVIGASI KE REGISTER ---
 const goToRegister = () => {
@@ -145,15 +160,39 @@ const login = async () => {
   padding: 25px;
 }
 
-input {
-  width: 100%;
-  padding: 14px;
+.input-group {
+  position: relative;
+  width: 320px;
   margin-bottom: 15px;
+}
+.input-group input {
+  width: 100%;
+  padding: 14px 10px;
+  font-size: 14px;
+  border: 1px solid black;
+  background-color: white;
   border-radius: 12px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  color: black;
-  box-sizing: border-box;
+  outline: none;
+  margin-bottom: 0px;
+  color:#0f172a;
+}
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: white;
+  padding: 0 5px;
+  color: #999;
+  font-size: 12px;
+  pointer-events: none;
+  transition: all 0.3s ease-out;
+}
+.input-group input:focus + label,
+.input-group input:valid+label {
+  top: -1px;
+  font-size: 10px;
+  color: #2f80ed;
 }
 
 button {
@@ -170,6 +209,7 @@ button {
 .signup {
   text-align: center;
   margin-top: 15px;
+  margin-bottom: 15px;
   color: gray;
 }
 
