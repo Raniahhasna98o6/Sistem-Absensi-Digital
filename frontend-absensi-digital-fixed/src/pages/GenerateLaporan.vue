@@ -56,7 +56,7 @@ const countHadir = computed(() => {
 
 // --- LOGIKA NAVIGASI KEMBALI ---
 const back = () => {
-  router.push('/beranda-dosen')
+  router.push('/BerandaDosen')
 }
 
 // --- AMBIL DATA LAPORAN DARI AZURE ---
