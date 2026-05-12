@@ -156,11 +156,14 @@ onMounted(() => {
 .phone {
   width: 390px;
   height: 800px;
-  background: #f5f5f5;
+  background: #f6f6f6;
   border-radius: 30px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+.phone:gradient-style {
+  background: linear-gradient(135deg, #0f1c2e, #ffffff);
 }
 
 /* HEADER */
@@ -256,11 +259,11 @@ onMounted(() => {
 /* LOGOUT */
 .logout {
   width: 100%;
-  max-width: 330px; /* 🔥 BIAR SEJAJAR CARD */
+  max-width: 330px;
   padding: 16px;
   background: red;
   border-radius: 16px;
-  border: 1px solid red;
+  border: 1px solid pink;
   color: white;
   font-weight: 700;
   font-size: 20px;

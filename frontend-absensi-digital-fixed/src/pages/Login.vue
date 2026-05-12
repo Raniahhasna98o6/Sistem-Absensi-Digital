@@ -26,11 +26,6 @@
 
         <button @click="login">LOGIN</button>
 
-        <p class="signup">
-          Don’t have an account?
-          <span @click="goToRegister">Sign up</span>
-        </p>
-
         <button style="width: 60%;" @click="goToRole">
           Back to Role Selection
         </button>
@@ -59,14 +54,6 @@ const role = route.query.role || 'student'
 // --- LOGIKA NAVIGASI KE ROLE SELECTION ---
 const goToRole = () => {
   router.push('/role')
-}
-
-// --- LOGIKA NAVIGASI KE REGISTER ---
-const goToRegister = () => {
-  router.push({
-    path: '/register',
-    query: { role }
-  })
 }
 
 // --- PROSES AUTENTIKASI KE SERVER AZURE ---
@@ -204,18 +191,6 @@ button {
   border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
-}
-
-.signup {
-  text-align: center;
-  margin-top: 15px;
   margin-bottom: 15px;
-  color: gray;
-}
-
-.signup span {
-  color: #2f80ed;
-  cursor: pointer;
-  font-weight: bold;
 }
 </style>
