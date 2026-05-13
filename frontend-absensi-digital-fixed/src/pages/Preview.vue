@@ -1,259 +1,174 @@
 <template>
   <div class="wrapper">
     <div class="phone">
-
-      <!-- HEADER NAVIGASI -->
-      <div class="header">
-        <span class="back" @click="back">←</span>
-        <h3>Verifikasi Foto</h3>
+      
+      <div class="topbar">
+        <span @click="back">←</span>
+        <h3>Riwayat Kehadiran</h3>
       </div>
 
       <div class="content">
-        <!-- TAMPILAN HASIL FOTO KAMERA -->
-        <img :src="image" class="photo" />
-
-        <!-- STATUS GEOLOKASI (GEOFENCING) -->
-        <div class="status">
-          📍 Dalam Area Kampus
+        <div class="tabs">
+          <button :class="{ active: active === 'semua' }" @click="active = 'semua'">Semua</button>
+          <button :class="{ active: active === 'hadir' }" @click="active = 'hadir'">Hadir</button>
+          <button :class="{ active: active === 'tidak' }" @click="active = 'tidak'">Tidak Hadir</button>
         </div>
 
-        <!-- INFORMASI MATA KULIAH AKTIF -->
-        <div class="info-box">
-          <div class="row">
-            <div class="icon">📅</div>
-            <div class="text">
-              <!-- Data diambil dinamis dari database Azure -->
-              <p class="matkul">{{ activeClass.matkul || 'Mata Kuliah' }}</p>
-              <p class="jam">{{ activeClass.jam || '--:--' }} WIB</p>
+        <div class="list-container">
+          <div v-if="filteredData.length === 0" class="empty">
+            <p>Belum ada riwayat absen.</p>
+          </div>
+
+          <div v-for="(item, index) in filteredData" :key="item.id_absensi || index" class="history-card">
+            
+            <div class="photo-container">
+              <img 
+                v-if="item.foto_abs && item.foto_abs.trim() !== ''" 
+                :src="formatImageBase64(item.foto_abs)" 
+                alt="Foto" 
+                class="absensi-img" 
+              />
+              <div v-else class="no-photo">📷</div>
+            </div>
+
+            <div class="card-info">
+              <p class="matkul">{{ item.nama_kelas || item.matkul }} ({{ item.kode_mk || '-' }})</p>
+              <p class="detail">{{ formatTanggal(item.tanggal_abs || item.jam) }}</p>
+              <p class="detail-loc">📍 {{ item.lokasi_abs || item.ruang }}</p>
+            </div>
+
+            <div :class="['status-badge', (item.status_abs || item.status).toLowerCase()]">
+              {{ item.status_abs || (item.status === 'hadir' ? 'Hadir' : 'Tidak Hadir') }}
             </div>
           </div>
         </div>
 
-        <!-- AKSI: ULANG ATAU KIRIM KE SERVER -->
-        <div class="buttons">
-          <button class="ulang" @click="ulang">Ambil Ulang</button>
-          <button class="kirim" @click="kirim">Kirim Absensi</button>
-        </div>
-
       </div>
+
+      <div class="bottom-spacer"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
-const image = ref('')
-const activeClass = ref({})
+const active = ref('semua')
+const data = ref([])
 
-// --- NAVIGASI KEMBALI KE KAMERA ---
-const back = () => router.push('/kamera')
-const ulang = () => router.push('/kamera')
+const back = () => router.push('/beranda')
 
-// --- LOAD DATA DARI STORAGE SAAT HALAMAN DIBUKA ---
-onMounted(() => {
-  const capturedPhoto = localStorage.getItem('captured_photo')
-  const savedClass = localStorage.getItem('active_class')
-
-  if (capturedPhoto) {
-    image.value = capturedPhoto
-  } else {
-    router.push('/kamera') // Proteksi jika tidak ada foto
-  }
-
-  if (savedClass) {
-    activeClass.value = JSON.parse(savedClass)
-  }
+const filteredData = computed(() => {
+  if (active.value === 'semua') return data.value
+  return data.value.filter(item => {
+    const status = (item.status_abs || item.status).toLowerCase()
+    return status === active.value
+  })
 })
 
-// --- KIRIM DATA ABSENSI KE BACKEND AZURE ---
-// --- KIRIM DATA ABSENSI KE BACKEND AZURE DENGAN GPS ASLI ---
-const kirim = async () => {
-  // 1. Cek apakah browser support GPS
-  if (!navigator.geolocation) {
-    alert("Waduh, browser lu nggak support fitur lokasi (GPS), Sean!")
-    return
+// --- FUNGSI PENYELAMAT FOTO (WAJIB ADA DI SINI) ---
+const formatImageBase64 = (base64String) => {
+  if (!base64String) return '';
+  
+  // Hapus spasi atau karakter aneh di awal/akhir string dari database
+  const cleanString = base64String.trim();
+
+  // Kalau sudah ada prefix-nya, langsung pakai
+  if (cleanString.startsWith('data:image')) {
+    return cleanString;
   }
-
-  // Tampilkan loading kalau perlu, karena ambil posisi GPS butuh waktu 1-3 detik
-  console.log("Sedang mengambil lokasi presisi...")
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      try {
-        // Ambil koordinat asli dari hardware GPS
-        const latAsli = position.coords.latitude
-        const lngAsli = position.coords.longitude
-
-        const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
-        const cleanBaseURL = baseURL.replace(/\/$/, "")
-
-        // 2. Kirim ke API Golang dengan data GPS yang akurat
-        const response = await axios.post(`${cleanBaseURL}/api/absensi`, {
-          image: image.value,
-          matkul: activeClass.value.matkul,
-          Latitude: latAsli, // Dinamis dari GPS
-          Longitude: lngAsli  // Dinamis dari GPS
-        }, {
-          withCredentials: true 
-        })
-
-        // Bersihkan storage dan pindah ke halaman sukses
-        localStorage.removeItem('captured_photo')
-        localStorage.removeItem('active_class')
-        router.push('/success')
-
-      } catch (error) {
-        console.error('Gagal kirim absen:', error)
-        // Kalau gagal karena radius, pesan "Gagal! Anda berada di luar radius kampus!" bakal muncul di sini
-        alert(error.response?.data?.message || 'Terjadi kesalahan pada server Azure.')
-      }
-    },
-    (error) => {
-      // Handle jika user menolak (Deny) izin lokasi
-      console.error('Error GPS:', error)
-      alert("Gagal ambil lokasi! Pastikan GPS HP nyala dan kasih izin 'Allow' di browser.")
-    },
-    {
-      enableHighAccuracy: true, // Pakai GPS beneran, bukan cuma sinyal tower
-      timeout: 5000,            // Maksimal nunggu 5 detik
-      maximumAge: 0             // Jangan pakai lokasi lama yang tersimpan di cache
-    }
-  )
+  
+  // Kalau belum ada (string mentah), tambahkan prefix JPEG
+  return `data:image/jpeg;base64,${cleanString}`;
 }
+
+const formatTanggal = (dateString) => {
+  if (!dateString || (dateString.includes('-') && !dateString.includes('T') && !dateString.includes(':'))) return dateString
+  try {
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('id-ID', {
+      weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+    }).format(date)
+  } catch(e) { return dateString }
+}
+
+onMounted(async () => {
+  try {
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
+    const response = await axios.get(`${cleanBaseURL}/api/absensi/riwayat`, { withCredentials: true })
+    
+    // Sortir data agar absen terbaru muncul paling atas (opsional tapi bagus buat UX)
+    data.value = response.data.sort((a, b) => new Date(b.tanggal_abs) - new Date(a.tanggal_abs))
+
+  } catch (error) {
+    console.error('Gagal mengambil data:', error)
+    data.value = [
+      { matkul: 'Jaringan Komputer', ruang: 'TULT 0714', jam: '2024-05-13T08:00:00Z', status: 'hadir', foto_abs: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' }
+    ]
+  }
+})
 </script>
 
 <style scoped>
-/* --- KONFIGURASI LAYOUT & WRAPPER --- */
-.wrapper {
-  min-height: 100vh;
-  background: #0f1c2e;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.phone {
-  width: 390px;
-  height: 800px;
-  background: white;
-  border-radius: 30px;
+/* CSS Tambahan untuk Foto */
+.photo-container {
+  width: 65px;
+  height: 65px;
+  border-radius: 12px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* --- STYLE KOMPONEN KONTEN --- */
-.header {
+  background: #e2e8f0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px;
-  background: #f3f3f3;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1; /* Kasih border tipis biar rapi */
 }
 
-.header h3 {
-  font-weight: 700;
-  font-size: 18px;
-  color: black;
-}
-
-.back {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  gap: 12px;
-}
-
-.photo {
+.absensi-img {
   width: 100%;
-  height: 260px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 20px;
+  display: block; /* Mencegah bug spasi kosong di bawah gambar */
 }
 
-.status {
-  background: #e9e9e9;
-  padding: 12px;
-  border-radius: 20px;
-  font-weight: 600;
-  color: #555;
-  text-align: center;
+.no-photo {
+  font-size: 24px;
+  opacity: 0.4;
 }
 
-.info-box {
-  background: #f2f2f2;
-  border-radius: 20px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
+/* Penyesuaian Card Info */
+.card-info {
+  flex: 1;
+  margin-left: 15px;
 }
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.icon {
-  font-size: 30px;
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-}
-
-.matkul {
-  font-size: 18px;
-  font-weight: 700;
-  color: black;
-}
-
-.jam {
-  font-size: 15px;
-  font-weight: 600;
-  color: #444;
+.detail-loc {
+  font-size: 11px;
+  color: #64748b;
   margin-top: 2px;
 }
 
-/* --- STYLE TOMBOL AKSI --- */
-.buttons {
-  margin-top: auto;
-  display: flex;
-  gap: 12px;
-}
-
-.ulang {
-  flex: 1;
-  background: #ff3b30;
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.kirim {
-  flex: 1;
-  background: #2f80ed;
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-}
+/* SISA CSS BAWAAN LU */
+.wrapper { background: #0f172a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+.phone { width: 390px; height: 780px; background: #f8fafc; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.topbar { padding: 20px; background: white; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #e2e8f0; }
+.topbar span { font-size: 24px; cursor: pointer; color: #0f172a; }
+.topbar h3 { font-weight: 700; font-size: 18px; color: #0f172a; margin: 0; }
+.content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+.tabs { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; }
+.tabs button { flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; background: transparent; transition: 0.3s; }
+.tabs button.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #dc2626; }
+.list-container { display: flex; flex-direction: column; gap: 12px; }
+.history-card { background: white; padding: 12px; border-radius: 16px; display: flex; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.matkul { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.detail { font-size: 11px; color: #64748b; }
+.status-badge { padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.status-badge.hadir { background: #dcfce7; color: #166534; }
+.status-badge.tidak { background: #fee2e2; color: #991b1b; }
+.empty { text-align: center; color: #94a3b8; margin-top: 40px; }
+.bottom-spacer { height: 20px; background: #f8fafc; }
 </style>
