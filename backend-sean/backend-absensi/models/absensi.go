@@ -43,7 +43,7 @@ func (a *Absensi) CekRadiusLokasi() bool {
 	fmt.Printf("JARAK TERDETEKSI: %f meter dari kampus\n", jarak)
 	fmt.Printf("LAT USER: %f, LON USER: %f\n", a.Latitude, a.Longitude)
 
-	return true //jarak <= MaxRadius
+	return jarak <= MaxRadius
 }
 
 func (a *Absensi) SimpanKeDatabase(nim string) (bool, string) {

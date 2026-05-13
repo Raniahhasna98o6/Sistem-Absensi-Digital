@@ -56,6 +56,7 @@ const data = ref([])
 
 const back = () => router.push('/beranda')
 
+// 1. FILTER DATA (Cukup satu kali aja)
 const filteredData = computed(() => {
   if (active.value === 'semua') return data.value
   return data.value.filter(item => {
@@ -64,6 +65,17 @@ const filteredData = computed(() => {
   })
 })
 
+// 2. FUNGSI RENDER GAMBAR (Biar gambarnya meledak muncul di layar)
+const formatImageBase64 = (base64String) => {
+  if (!base64String) return '';
+  const cleanString = base64String.trim();
+  if (cleanString.startsWith('data:image')) {
+    return cleanString;
+  }
+  return `data:image/jpeg;base64,${cleanString}`;
+}
+
+// 3. FUNGSI FORMAT TANGGAL (Cukup satu kali aja)
 const formatTanggal = (dateString) => {
   if (!dateString || (dateString.includes('-') && !dateString.includes('T') && !dateString.includes(':'))) return dateString
   try {
@@ -74,6 +86,7 @@ const formatTanggal = (dateString) => {
   } catch(e) { return dateString }
 }
 
+// 4. MENGAMBIL DATA DARI AZURE
 onMounted(async () => {
   try {
     const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
@@ -82,7 +95,7 @@ onMounted(async () => {
     data.value = response.data
   } catch (error) {
     console.error('Gagal mengambil data:', error)
-    // Data dummy untuk simulasi tampilan foto
+    // Data dummy untuk simulasi tampilan foto kalau API mati
     data.value = [
       { matkul: 'Jaringan Komputer', ruang: 'TULT 0714', jam: '2024-05-13T08:00:00Z', status: 'hadir', foto_abs: 'https://via.placeholder.com/150' }
     ]
