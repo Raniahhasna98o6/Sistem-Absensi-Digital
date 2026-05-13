@@ -69,6 +69,7 @@ func main() {
 			c.JSON(http.StatusOK, gin.H{
 				"message": "Login Mahasiswa Berhasil",
 				"nama":    m.Nama,
+				"nim":     m.NIM, // tambah ini
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau Password salah"})

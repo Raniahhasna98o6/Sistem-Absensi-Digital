@@ -47,6 +47,11 @@ const password = ref('')
 const router = useRouter()
 const route = useRoute()
 
+
+const res = await axios.post(`${baseURL}/login/mahasiswa`, { email, password })
+localStorage.setItem('nim_user', res.data.nim) // tambah ini
+localStorage.setItem('nama_user', res.data.nama)
+
 // Ambil role dari URL (misal: /login?role=student)
 // Kalau kosong, kita set default ke 'student' biar formnya gak langsung error
 const role = route.query.role || 'student' 
