@@ -31,10 +31,10 @@ jobs:
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./backend-absensi
           push: true
-          tags: acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_2D518E10C3FF4329A974AFA3FE3FE5AB }}/acrtelyu123/backend-absensi:${{ github.sha }}
-          file: ./Dockerfile
+          tags: acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}/backend-absensi:${{ github.sha }}
+          file: ./backend-absensi/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,5 +49,4 @@ jobs:
         with:
           app-name: 'sistemabsensi'
           slot-name: 'Production'
-          images: 'acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_2D518E10C3FF4329A974AFA3FE3FE5AB }}/acrtelyu123/backend-absensi:${{ github.sha }}'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DBCDF534E19A4F6F85BD2E9113C3ED0D }}
+          images: 'acrtelyu123.azurecr.io/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}/backend-absensi:${{ github.sha }}'
