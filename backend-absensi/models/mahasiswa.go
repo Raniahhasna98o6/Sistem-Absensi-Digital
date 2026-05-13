@@ -14,7 +14,7 @@ func (m *Mahasiswa) Login(email, password string) bool {
 	query := `
 		SELECT m.nim, m.nama, u.password 
 		FROM mahasiswa m 
-		JOIN User u ON m.id_user = u.id_user 
+		JOIN user u ON m.id_user = u.id_user 
 		WHERE u.email = ? AND u.role = 'mahasiswa'`
 
 	err := config.DB.QueryRow(query, email).Scan(&m.NIM, &m.Nama, &m.Password)
