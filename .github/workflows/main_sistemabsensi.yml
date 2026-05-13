@@ -24,9 +24,9 @@ jobs:
       - name: Log in to container registry
         uses: docker/login-action@v2
         with:
-          registry: acrtelyu123.azurecr.io/
-          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_2D518E10C3FF4329A974AFA3FE3FE5AB }}
-          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_02611948186A477FAF81CF3FACF14675 }}
+          registry: acrtelyu123.azurecr.io
+          username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_A9680F19ADC24A948C1308FF663D81BB }}
+          password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_925C540EF0B04934B67BB7583F1FE0B1 }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
