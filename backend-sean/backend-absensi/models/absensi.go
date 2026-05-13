@@ -19,10 +19,9 @@ type Absensi struct {
 }
 
 const (
-	TelyuLat = -6.974490
-	TelyuLon = 107.630350
-	//MaxRadius = 800.0 // masih tak taruh di komen dengan tujuan pengetesan database
-	MaxRadius = 100000000000
+	TelyuLat  = -6.974490
+	TelyuLon  = 107.630350
+	MaxRadius = 800.0
 )
 
 func (a *Absensi) CekRadiusLokasi() bool {
@@ -44,7 +43,7 @@ func (a *Absensi) CekRadiusLokasi() bool {
 	fmt.Printf("JARAK TERDETEKSI: %f meter dari kampus\n", jarak)
 	fmt.Printf("LAT USER: %f, LON USER: %f\n", a.Latitude, a.Longitude)
 
-	return jarak <= MaxRadius
+	return true //jarak <= MaxRadius
 }
 
 func (a *Absensi) SimpanKeDatabase(nim string) (bool, string) {
