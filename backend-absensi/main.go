@@ -4,6 +4,7 @@ import (
 	"backend-absensi/config"
 	"backend-absensi/models"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -47,20 +48,28 @@ func main() {
 
 	// 3. RUTE LOGIN MAHASISWA
 	r.POST("/login/mahasiswa", func(c *gin.Context) {
+		// 1. Bikin struct penampung (ini yang bikin 'req' jadi terdefinisi)
 		var req struct {
 			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
+
+		// 2. Masukin data dari Body Request ke variabel req
 		if err := c.BindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Format data salah"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Format data salah!"})
 			return
 		}
 
 		m := models.Mahasiswa{}
+
+		// 3. Sekarang req.Email dan req.Password udah bisa dipake
 		if m.Login(req.Email, req.Password) {
-			c.SetSameSite(http.SameSiteNoneMode)
-			c.SetCookie("nim_user", m.NIM, 3600, "/", "", true, true)
-			c.JSON(http.StatusOK, gin.H{"message": "Login Mahasiswa Berhasil", "nama": m.Nama})
+			// Domain kosong "" biar aman di lokal maupun Azure
+			c.SetCookie("nim_user", m.NIM, 3600, "/", "", false, true)
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Login Mahasiswa Berhasil",
+				"nama":    m.Nama,
+			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau Password salah"})
 		}
@@ -146,5 +155,10 @@ func main() {
 	})
 
 	// 9. PERBAIKAN PORT UNTUK AZURE
-	r.Run("0.0.0.0:8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
+
 }
