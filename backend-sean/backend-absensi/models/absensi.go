@@ -60,25 +60,26 @@ func (a *Absensi) SimpanKeDatabase(nim string) (bool, string) {
 }
 
 func (a *Absensi) AmbilDataAbsensi(nim string) []Absensi {
-	// 1. UPDATE QUERY: Tambahkan foto_abs di dalam SELECT
-	query := "SELECT id_absensi, tanggal_abs, status_abs, lokasi_abs, foto_abs FROM absensi WHERE nim = ? ORDER BY tanggal_abs DESC"
+	// 1. TAMBAHIN latitude dan longitude DI QUERY SELECT
+	query := "SELECT id_absensi, tanggal_abs, status_abs, lokasi_abs, foto_abs, latitude, longitude FROM absensi WHERE nim = ? ORDER BY tanggal_abs DESC"
 
-	// Catatan: Pakai = lebih aman dan cepat daripada LIKE kalau nyari NIM spesifik
 	rows, err := config.DB.Query(query, nim)
 	if err != nil {
-		return nil
+		fmt.Println("Error DB:", err)
+		return []Absensi{}
 	}
 	defer rows.Close()
 
-	var riwayat []Absensi
+	riwayat := []Absensi{}
 	for rows.Next() {
 		var item Absensi
 		var t time.Time
 
-		// 2. UPDATE SCAN: Tambahkan &item.FotoAbs di urutan terakhir sesuai urutan SELECT
-		err := rows.Scan(&item.IdAbsensi, &t, &item.StatusAbs, &item.LokasiAbs, &item.FotoAbs)
+		// 2. TAMBAHIN &item.Latitude dan &item.Longitude DI SCAN (HARUS SESUAI URUTAN SELECT)
+		err := rows.Scan(&item.IdAbsensi, &t, &item.StatusAbs, &item.LokasiAbs, &item.FotoAbs, &item.Latitude, &item.Longitude)
 		if err != nil {
-			continue // Skip kalau ada error scan di satu baris, biar gak crash
+			fmt.Println("Error Scan:", err)
+			continue
 		}
 
 		item.TanggalAbs = t.Format("2006-01-02 15:04:05")
