@@ -20,11 +20,11 @@ func (m *Mahasiswa) Login(email, password string) bool {
 
 	err := config.DB.QueryRow(query, email).Scan(&m.NIM, &m.Nama, &m.Password)
 	if err != nil {
-		fmt.Println("DB Error:", err) // tambah ini
+		fmt.Println("DB Error:", err) // lihat error di terminal
 		return false
 	}
 
-	fmt.Println("Password DB:", m.Password, "| Input:", password) // tambah ini
+	fmt.Println("DB Password:", m.Password, "| Input:", password) // lihat nilai passwordnya
 	return m.Password != "" && m.Password == password
 }
 
