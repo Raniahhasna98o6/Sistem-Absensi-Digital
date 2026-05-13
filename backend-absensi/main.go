@@ -83,13 +83,13 @@ func main() {
 			return
 		}
 
-		nim, err := c.Cookie("nim_user")
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Silakan login terlebih dahulu"})
+		// Ambil NIM dari body, bukan cookie
+		if data.Nim == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "NIM tidak ditemukan"})
 			return
 		}
 
-		m := models.Mahasiswa{NIM: nim}
+		m := models.Mahasiswa{NIM: data.Nim}
 		success, pesan := m.InputKehadiran(data)
 
 		if success {

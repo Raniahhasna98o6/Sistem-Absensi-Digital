@@ -87,13 +87,17 @@ const kirim = async () => {
         const cleanBaseURL = baseURL.replace(/\/$/, "")
 
         // PAYLOAD SESUAI DATABASE MYSQL
+        localStorage.setItem('nim_user', response.data.nim)
+
+        // Di preview.vue:
+        const nimUser = localStorage.getItem('nim_user')
         const payload = {
-          nim: '130122XXXX', // Ganti pake NIM lu biar ga kena error NOT NULL
-          foto_abs: image.value, 
-          lokasi_abs: activeClass.value.ruangan || 'TULT',
-          status_abs: 'Hadir',
-          latitude: latAsli,
-          longitude: lngAsli
+            nim: nimUser,
+            foto_abs: image.value,
+            lokasi_abs: activeClass.value.ruangan || 'TULT',
+            status_abs: 'Hadir',
+            latitude: latAsli,
+            longitude: lngAsli
         }
 
         await axios.post(`${cleanBaseURL}/api/absensi`, payload, {
