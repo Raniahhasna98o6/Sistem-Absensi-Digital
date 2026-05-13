@@ -9,6 +9,7 @@ import (
 
 type Absensi struct {
 	IdAbsensi  int     `json:"id_absensi"`
+	Nim        string  `json:"nim"`
 	TanggalAbs string  `json:"tanggal_abs"`
 	StatusAbs  string  `json:"status_abs"`
 	LokasiAbs  string  `json:"lokasi_abs"`
@@ -59,20 +60,27 @@ func (a *Absensi) SimpanKeDatabase(nim string) (bool, string) {
 }
 
 func (a *Absensi) AmbilDataAbsensi(nim string) []Absensi {
-	query := "SELECT id_absensi, tanggal_abs, status_abs, lokasi_abs FROM absensi WHERE nim LIKE ? ORDER BY tanggal_abs DESC"
+	// 1. TAMBAHIN latitude dan longitude DI QUERY SELECT
+	query := "SELECT id_absensi, tanggal_abs, status_abs, lokasi_abs, foto_abs, latitude, longitude FROM absensi WHERE nim = ? ORDER BY tanggal_abs DESC"
 
 	rows, err := config.DB.Query(query, nim)
 	if err != nil {
-		return nil
+		fmt.Println("Error DB:", err)
+		return []Absensi{}
 	}
 	defer rows.Close()
 
-	var riwayat []Absensi
+	riwayat := []Absensi{}
 	for rows.Next() {
 		var item Absensi
 		var t time.Time
-		// Sesuaikan urutan scan dengan SELECT (tidak ada nim yang di-scan)
-		rows.Scan(&item.IdAbsensi, &t, &item.StatusAbs, &item.LokasiAbs)
+
+		// 2. TAMBAHIN &item.Latitude dan &item.Longitude DI SCAN (HARUS SESUAI URUTAN SELECT)
+		err := rows.Scan(&item.IdAbsensi, &t, &item.StatusAbs, &item.LokasiAbs, &item.FotoAbs, &item.Latitude, &item.Longitude)
+		if err != nil {
+			fmt.Println("Error Scan:", err)
+			continue
+		}
 
 		item.TanggalAbs = t.Format("2006-01-02 15:04:05")
 		riwayat = append(riwayat, item)
