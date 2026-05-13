@@ -38,35 +38,26 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios' 
+import axios from 'axios'
 import logo from '../assets/logo.png'
 
-// --- INISIALISASI ROUTING & STATE ---
 const email = ref('')
 const password = ref('')
 const router = useRouter()
 const route = useRoute()
 
+// Ambil role dari URL (misal: /login?role=student atau /login?role=lecturer)
+const role = route.query.role || 'student'
 
-const res = await axios.post(`${baseURL}/login/mahasiswa`, { email, password })
-localStorage.setItem('nim_user', res.data.nim) // tambah ini
-localStorage.setItem('nama_user', res.data.nama)
-
-// Ambil role dari URL (misal: /login?role=student)
-// Kalau kosong, kita set default ke 'student' biar formnya gak langsung error
-const role = route.query.role || 'student' 
-
-// --- LOGIKA NAVIGASI KE ROLE SELECTION ---
 const goToRole = () => {
   router.push('/role')
 }
 
-// --- PROSES AUTENTIKASI KE SERVER AZURE ---
 const login = async () => {
   // 1. Validasi Input Lokal
   if (!email.value || !password.value) return alert('Email dan password wajib diisi!')
 
-  // 2. Proteksi Domain Email (Sesuai kampus Telkom University)
+  // 2. Proteksi Domain Email
   const domain = role === 'lecturer' ? '@telkomuniversity.ac.id' : '@student.telkomuniversity.ac.id'
   if (!email.value.endsWith(domain)) {
     alert(`Gunakan email resmi institusi untuk ${role}!`)
@@ -74,43 +65,36 @@ const login = async () => {
   }
 
   try {
-    // 3. Eksekusi Request dengan Fallback URL Azure (Anti-Gagal Netlify)
     const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
-    
-    // Pastikan nggak ada double slash pas URL digabung
     const cleanBaseURL = baseURL.replace(/\/$/, "")
     const endpoint = role === 'lecturer' ? '/login/dosen' : '/login/mahasiswa'
-    
     const finalURL = `${cleanBaseURL}${endpoint}`
 
-    // 4. Kirim Request ke Backend Golang
     const response = await axios.post(finalURL, {
       email: email.value,
       password: password.value
     }, {
-      withCredentials: true // WAJIB supaya Azure bisa ngasih Cookie 'nim_user'
+      withCredentials: true
     })
 
-    // 5. Manajemen Session Lokal
-    localStorage.setItem('user_nama', response.data.nama) 
-    localStorage.setItem('role', role)
+    // Simpan data ke localStorage — KEY KONSISTEN di semua halaman
+    localStorage.setItem('user_nama', response.data.nama)
+    localStorage.setItem('user_nim', response.data.nim || '')   // untuk mahasiswa
+    localStorage.setItem('user_nidn', response.data.nidn || '') // untuk dosen
+    localStorage.setItem('role', role) // simpan 'student' atau 'lecturer'
 
     alert('Login Berhasil!')
 
-    // 6. Routing Berdasarkan Role User
     router.push(role === 'lecturer' ? '/BerandaDosen' : '/Beranda')
-    
+
   } catch (error) {
-    // 7. Penanganan Error
     console.error('Login Error:', error)
-    // Tampilkan pesan error spesifik dari Golang lu (misal: "Email atau Password salah")
     alert(error.response?.data?.error || 'Gagal terhubung ke server Azure!')
   }
 }
 </script>
 
 <style scoped>
-/* --- LAYOUT UTAMA --- */
 .wrapper {
   background: #0f172a;
   min-height: 100vh;
@@ -127,7 +111,6 @@ const login = async () => {
   overflow: hidden;
 }
 
-/* --- TAMPILAN VISUAL HEADER --- */
 .header {
   background: #ff2d2d;
   color: white;
@@ -147,7 +130,6 @@ const login = async () => {
   width: 95px;
 }
 
-/* --- ELEMEN FORM & INPUT --- */
 .form {
   padding: 25px;
 }
