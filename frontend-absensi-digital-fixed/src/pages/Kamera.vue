@@ -65,18 +65,22 @@ onUnmounted(() => {
 // --- PROSES PENGAMBILAN GAMBAR ---
 const takePhoto = () => {
   const ctx = canvas.value.getContext('2d')
-  canvas.value.width = video.value.videoWidth
-  canvas.value.height = video.value.videoHeight
+  
+  // Kecilin resolusi kanvasnya biar Base64-nya nggak kegedean
+  // (Misal dikecilin jadi setengahnya)
+  canvas.value.width = video.value.videoWidth / 2
+  canvas.value.height = video.value.videoHeight / 2
 
-  ctx.drawImage(video.value, 0, 0)
+  ctx.drawImage(video.value, 0, 0, canvas.value.width, canvas.value.height)
 
-  // Konversi hasil jepretan ke Base64
-  const image = canvas.value.toDataURL("image/png")
+  // Konversi pake kualitas yang agak diturunin (0.7)
+  const image = canvas.value.toDataURL("image/jpeg", 0.7)
 
-  // Simpan foto di storage sementara untuk dilempar ke halaman preview
+  // Simpan foto
   localStorage.setItem('captured_photo', image)
 
-  router.push('/preview')
+  // Pastikan nama rutenya SAMA PERSIS dengan yang di router/index.js
+  router.push('/preview') 
 }
 </script>
 
