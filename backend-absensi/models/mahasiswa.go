@@ -2,6 +2,7 @@ package models
 
 import (
 	"backend-absensi/config"
+	"fmt"
 )
 
 type Mahasiswa struct {
@@ -12,13 +13,15 @@ type Mahasiswa struct {
 
 func (m *Mahasiswa) Login(email, password string) bool {
 	query := `
-		SELECT m.nim, m.nama, u.password 
-		FROM mahasiswa m 
-		JOIN user u ON m.id_user = u.id_user 
-		WHERE u.email = ? AND u.role = 'mahasiswa'`
+        SELECT m.nim, m.nama, u.password 
+        FROM mahasiswa m 
+        JOIN user u ON m.id_user = u.id_user 
+        WHERE u.email = ? AND u.role = 'mahasiswa'`
 
 	err := config.DB.QueryRow(query, email).Scan(&m.NIM, &m.Nama, &m.Password)
 	if err != nil {
+		// TAMBAHIN LOG INI SEAN! Biar ketauan errornya apa
+		fmt.Println("DEBUG LOGIN ERROR:", err)
 		return false
 	}
 

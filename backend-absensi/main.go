@@ -108,7 +108,7 @@ func main() {
 		d := models.Dosen{}
 		if d.Login(req.Email, req.Password) {
 			c.SetSameSite(http.SameSiteNoneMode)
-			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "", false, true)
+			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "", true, true)
 			c.JSON(http.StatusOK, gin.H{"message": "Login Dosen Berhasil", "nama": d.Nama})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Akses Dosen ditolak"})
