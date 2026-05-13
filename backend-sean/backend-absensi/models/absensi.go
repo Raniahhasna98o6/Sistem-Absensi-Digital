@@ -19,9 +19,10 @@ type Absensi struct {
 }
 
 const (
-	TelyuLat  = -6.974490
-	TelyuLon  = 107.630350
-	MaxRadius = 800.0
+	TelyuLat = -6.974490
+	TelyuLon = 107.630350
+	//MaxRadius = 800.0 // masih tak taruh di komen dengan tujuan pengetesan database
+	MaxRadius = 100000000000
 )
 
 func (a *Absensi) CekRadiusLokasi() bool {
