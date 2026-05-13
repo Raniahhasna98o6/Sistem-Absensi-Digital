@@ -12,7 +12,7 @@ var DB *sql.DB
 
 func ConnectDB() {
 	// Ganti nama databasenya jadi db-absensi-telyu sesuai dengan yang di Azure
-	dsn := "sean:Bean2080!!!!@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db-absensi-telyu?parseTime=true&tls=skip-verify"
+	dsn := "sean:Bean2080!!!!@tcp(db-absensi-telyu.mysql.database.azure.com:3306)/db_absensi?parseTime=true&tls=skip-verify"
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
