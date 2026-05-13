@@ -15,7 +15,7 @@ func (d *Dosen) Login(email, password string) bool {
 	query := `
 		SELECT d.nidn, d.nama, u.password 
 		FROM dosen d 
-		JOIN user u ON d.id_user = u.id_user 
+		JOIN User u ON d.id_user = u.id_user 
 		WHERE u.email = ? AND u.role = 'dosen'`
 
 	err := config.DB.QueryRow(query, email).Scan(&d.NIDN, &d.Nama, &d.Password)
