@@ -77,34 +77,9 @@ import axios from 'axios'
 
 const router = useRouter()
 const laporan = ref([])
-const idKelas = ref('1')
-const isLoading = ref(false)
-
-const idKelas = ref('') // Biarkan kosong dulu
 const listKelas = ref([]) // State buat nampung daftar kelas dari DB
-
-const ambilDaftarKelas = async () => {
-  const nidn = localStorage.getItem('user_nidn')
-  try {
-    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
-    const response = await axios.get(`${baseURL.replace(/\/$/, "")}/api/dosen/daftar-kelas?nidn=${nidn}`)
-    
-    listKelas.value = response.data
-    
-    // Set default pilihan ke kelas pertama kalau ada datanya
-    if (listKelas.value.length > 0) {
-      idKelas.value = listKelas.value[0].id
-      // Langsung panggil laporan buat kelas pertama ini
-      ambilLaporan()
-    }
-  } catch (error) {
-    console.error("Gagal load daftar kelas:", error)
-  }
-}
-
-onMounted(() => {
-  ambilDaftarKelas() // Ganti ambilLaporan() dengan ini
-})
+const idKelas = ref('') // Biarkan kosong dulu, nanti diisi otomatis
+const isLoading = ref(false)
 
 // Set default tanggal ke hari ini (Format: YYYY-MM-DD)
 const today = new Date().toISOString().split('T')[0]
@@ -120,6 +95,17 @@ const formatJam = (datetime) => {
   return datetime.split(' ')[1] || datetime
 }
 
+// --- FUNGSI FORMAT BASE64 ---
+const formatImageBase64 = (base64String) => {
+  if (!base64String) return '';
+  const cleanString = base64String.trim();
+  if (cleanString.startsWith('data:image')) {
+    return cleanString;
+  }
+  return `data:image/jpeg;base64,${cleanString}`;
+}
+
+// 1. Fungsi Ambil Laporan (Ditaruh di atas biar bisa dipanggil sama fungsi lain)
 const ambilLaporan = async () => {
   const nidn = localStorage.getItem('user_nidn')
   if (!nidn) {
@@ -152,15 +138,32 @@ const ambilLaporan = async () => {
   }
 }
 
-// --- FUNGSI FORMAT BASE64 ---
-const formatImageBase64 = (base64String) => {
-  if (!base64String) return '';
-  const cleanString = base64String.trim();
-  if (cleanString.startsWith('data:image')) {
-    return cleanString;
+// 2. Fungsi Ambil Daftar Kelas 
+const ambilDaftarKelas = async () => {
+  const nidn = localStorage.getItem('user_nidn')
+  try {
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const cleanBaseURL = baseURL.replace(/\/$/, "")
+    
+    const response = await axios.get(`${cleanBaseURL}/api/dosen/daftar-kelas?nidn=${nidn}`)
+    
+    listKelas.value = response.data
+    
+    // Set default pilihan ke kelas pertama kalau ada datanya
+    if (listKelas.value.length > 0) {
+      idKelas.value = listKelas.value[0].id
+      // Langsung panggil laporan buat kelas pertama ini
+      ambilLaporan()
+    }
+  } catch (error) {
+    console.error("Gagal load daftar kelas:", error)
   }
-  return `data:image/jpeg;base64,${cleanString}`;
 }
+
+// Otomatis ambil daftar kelas (yang nantinya manggil laporan juga) pas halaman dibuka
+onMounted(() => {
+  ambilDaftarKelas() 
+})
 </script>
 
 <style scoped>
