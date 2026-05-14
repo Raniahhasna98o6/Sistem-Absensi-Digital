@@ -15,17 +15,15 @@ func main() {
 
 	r := gin.Default()
 
-	// --- 1. JEMBATAN CORS (VERSI DINAMIS UNTUK VERCEL & LOCALHOST) ---
+	// 1. CORS
 	r.Use(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 
-		// Daftar URL yang lu kasih izin buat nembak ke Azure
 		allowedOrigins := map[string]bool{
-			"http://localhost:5173":            true, // Untuk ngetes di laptop lu
-			"https://absensisistem.vercel.app": true, // Link Vercel (PASTIKAN TANPA GARIS MIRING DI AKHIR)
+			"http://localhost:5173":            true,
+			"https://absensisistem.vercel.app": true,
 		}
 
-		// Kalau Origin dari request ada di daftar atas, kasih izin
 		if allowedOrigins[origin] {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
@@ -41,42 +39,36 @@ func main() {
 		c.Next()
 	})
 
-	// 2. RUTE REGISTER
+	// 2. REGISTER (placeholder)
 	r.POST("/register", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Registrasi berhasil masuk backend!"})
 	})
 
-	// 3. RUTE LOGIN MAHASISWA
+	// 3. LOGIN MAHASISWA
 	r.POST("/login/mahasiswa", func(c *gin.Context) {
-		// 1. Bikin struct penampung (ini yang bikin 'req' jadi terdefinisi)
 		var req struct {
 			Email    string `json:"email"`
 			Password string `json:"password"`
 		}
-
-		// 2. Masukin data dari Body Request ke variabel req
 		if err := c.BindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Format data salah!"})
 			return
 		}
 
 		m := models.Mahasiswa{}
-
-		// 3. Sekarang req.Email dan req.Password udah bisa dipake
 		if m.Login(req.Email, req.Password) {
-			// Domain kosong "" biar aman di lokal maupun Azure
 			c.SetCookie("nim_user", m.NIM, 3600, "/", "", false, true)
 			c.JSON(http.StatusOK, gin.H{
 				"message": "Login Mahasiswa Berhasil",
 				"nama":    m.Nama,
-				"nim":     m.NIM, // tambah ini
+				"nim":     m.NIM, // FIX: kirim NIM ke frontend untuk disimpan di localStorage
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email atau Password salah"})
 		}
 	})
 
-	// 4. RUTE INPUT ABSENSI
+	// 4. INPUT ABSENSI — baca NIM dari body (bukan cookie, karena cross-domain)
 	r.POST("/api/absensi", func(c *gin.Context) {
 		var data models.Absensi
 		if err := c.BindJSON(&data); err != nil {
@@ -84,7 +76,6 @@ func main() {
 			return
 		}
 
-		// Ambil NIM dari body, bukan cookie
 		if data.Nim == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "NIM tidak ditemukan"})
 			return
@@ -100,14 +91,24 @@ func main() {
 		}
 	})
 
-	// 5. RUTE RIWAYAT ABSENSI
+	// 5. RIWAYAT ABSENSI — FIX: baca NIM dari query param, bukan cookie
 	r.GET("/api/absensi/riwayat", func(c *gin.Context) {
-		nim, _ := c.Cookie("nim_user")
+		// Coba dari query param dulu (untuk frontend cross-domain)
+		nim := c.Query("nim")
+		if nim == "" {
+			// Fallback ke cookie (untuk testing Postman)
+			nim, _ = c.Cookie("nim_user")
+		}
+		if nim == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "NIM tidak ditemukan"})
+			return
+		}
+
 		m := models.Mahasiswa{NIM: nim}
 		c.JSON(http.StatusOK, m.BukaRiwayat())
 	})
 
-	// 6. RUTE LOGIN DOSEN
+	// 6. LOGIN DOSEN
 	r.POST("/login/dosen", func(c *gin.Context) {
 		var req struct {
 			Email    string `json:"email"`
@@ -119,21 +120,29 @@ func main() {
 		if d.Login(req.Email, req.Password) {
 			c.SetSameSite(http.SameSiteNoneMode)
 			c.SetCookie("nidn_user", d.NIDN, 3600, "/", "", true, true)
-			c.JSON(http.StatusOK, gin.H{"message": "Login Dosen Berhasil", "nama": d.Nama})
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Login Dosen Berhasil",
+				"nama":    d.Nama,
+				"nidn":    d.NIDN, // FIX: kirim NIDN ke frontend
+			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Akses Dosen ditolak"})
 		}
 	})
 
-	// 7. RUTE LAPORAN DOSEN
+	// 7. LAPORAN DOSEN
 	r.GET("/api/dosen/laporan", func(c *gin.Context) {
+		// Coba cookie dulu, fallback ke query param
 		nidn, err := c.Cookie("nidn_user")
-		if err != nil {
+		if err != nil || nidn == "" {
+			nidn = c.Query("nidn")
+		}
+		if nidn == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Sesi telah berakhir"})
 			return
 		}
 
-		periode := c.DefaultQuery("periode", "2026-04")
+		periode := c.DefaultQuery("periode", "2026-05")
 		idKelasStr := c.Query("id_kelas")
 		idKelas, _ := strconv.Atoi(idKelasStr)
 
@@ -147,7 +156,7 @@ func main() {
 		c.JSON(http.StatusOK, laporan)
 	})
 
-	// 8. RUTE LOGOUT
+	// 8. LOGOUT
 	r.POST("/logout", func(c *gin.Context) {
 		c.SetSameSite(http.SameSiteNoneMode)
 		c.SetCookie("nim_user", "", -1, "/", "", true, true)
@@ -155,11 +164,10 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})
 	})
 
-	// 9. PERBAIKAN PORT UNTUK AZURE
+	// 9. PORT AZURE
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 	r.Run(":" + port)
-
 }

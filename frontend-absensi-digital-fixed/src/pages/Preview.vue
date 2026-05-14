@@ -46,10 +46,8 @@ const image = ref('')
 const activeClass = ref({})
 const isSubmitting = ref(false)
 
-// --- NAVIGASI KEMBALI KE KAMERA ---
 const ulang = () => router.push('/kamera')
 
-// --- LOAD DATA DARI STORAGE SAAT HALAMAN DIBUKA ---
 onMounted(() => {
   const capturedPhoto = localStorage.getItem('captured_photo')
   const savedClass = localStorage.getItem('active_class')
@@ -57,21 +55,28 @@ onMounted(() => {
   if (capturedPhoto) {
     image.value = capturedPhoto
   } else {
-    router.push('/kamera') // Kalau ga ada foto, balik ke kamera
+    router.push('/kamera')
   }
 
   if (savedClass) {
     activeClass.value = JSON.parse(savedClass)
     if (!('diLuarJangkauan' in activeClass.value)) {
-       activeClass.value.diLuarJangkauan = false 
+       activeClass.value.diLuarJangkauan = false
     }
   }
 })
 
-// --- KIRIM DATA ABSENSI KE BACKEND AZURE ---
 const kirim = async () => {
   if (!navigator.geolocation) {
     alert("Browser tidak support GPS!")
+    return
+  }
+
+  // FIX: Ambil NIM dari localStorage yang disimpan saat login
+  const nimUser = localStorage.getItem('user_nim')
+  if (!nimUser) {
+    alert("Sesi habis, silakan login ulang!")
+    router.push('/login?role=student')
     return
   }
 
@@ -86,38 +91,28 @@ const kirim = async () => {
         const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
         const cleanBaseURL = baseURL.replace(/\/$/, "")
 
-        // PAYLOAD SESUAI DATABASE MYSQL
-        localStorage.setItem('nim_user', response.data.nim)
-
-        // Di preview.vue:
-        const nimUser = localStorage.getItem('nim_user')
         const payload = {
-            nim: nimUser,
-            foto_abs: image.value,
-            lokasi_abs: activeClass.value.ruangan || 'TULT',
-            status_abs: 'Hadir',
-            latitude: latAsli,
-            longitude: lngAsli
+          nim: nimUser,                              // FIX: dari localStorage, bukan response yang tidak ada
+          foto_abs: image.value,
+          lokasi_abs: activeClass.value.ruangan || 'TULT',
+          status_abs: 'Hadir',
+          latitude: latAsli,
+          longitude: lngAsli
         }
 
         await axios.post(`${cleanBaseURL}/api/absensi`, payload, {
-          withCredentials: true 
+          withCredentials: true
         })
 
-        // Bersihkan storage setelah sukses kirim
         localStorage.removeItem('captured_photo')
         localStorage.removeItem('active_class')
-        
-        // --- GANTI BARIS INI ---
-        // Asalnya: router.push('/riwayat')
-        // Ubah jadi:
         router.push('/success')
 
       } catch (error) {
         console.error('Gagal kirim absen:', error)
         alert("Gagal: " + (error.response?.data?.message || error.message))
       } finally {
-        isSubmitting.value = false 
+        isSubmitting.value = false
       }
     },
     (error) => {
@@ -137,11 +132,9 @@ const kirim = async () => {
 .back { font-size: 20px; cursor: pointer; }
 .content { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 12px; }
 .photo { width: 100%; height: 260px; object-fit: cover; border-radius: 20px; }
-
 .status { padding: 12px; border-radius: 20px; font-weight: 600; text-align: center; }
 .status-aman { background: #e9e9e9; color: #555; }
 .status-bahaya { background: #ffebee; color: #c62828; }
-
 .info-box { background: #f2f2f2; border-radius: 20px; padding: 16px; display: flex; align-items: center; }
 .row { display: flex; align-items: center; gap: 14px; }
 .icon { font-size: 30px; }
