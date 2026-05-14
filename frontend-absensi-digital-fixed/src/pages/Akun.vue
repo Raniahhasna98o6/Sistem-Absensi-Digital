@@ -108,7 +108,7 @@ const logout = async () => {
   } finally {
     // 3. Bersihkan sisa data di browser & tendang ke Login
     localStorage.clear()
-    router.push('/login?role=mahasiswa')
+    router.push('/role')
   }
 }
 

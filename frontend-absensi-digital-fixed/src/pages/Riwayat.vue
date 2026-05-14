@@ -88,17 +88,23 @@ const formatTanggal = (dateString) => {
 
 // 4. MENGAMBIL DATA DARI AZURE
 onMounted(async () => {
+  // FIX: ambil NIM dari localStorage, kirim via query param
+  const nim = localStorage.getItem('user_nim')
+  if (!nim) {
+    router.push('/login?role=student')
+    return
+  }
+
   try {
     const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
     const cleanBaseURL = baseURL.replace(/\/$/, "")
-    const response = await axios.get(`${cleanBaseURL}/api/absensi/riwayat`, { withCredentials: true })
-    data.value = response.data
+    const response = await axios.get(`${cleanBaseURL}/api/absensi/riwayat?nim=${nim}`, {
+      withCredentials: true
+    })
+    data.value = response.data || []
   } catch (error) {
     console.error('Gagal mengambil data:', error)
-    // Data dummy untuk simulasi tampilan foto kalau API mati
-    data.value = [
-      { matkul: 'Jaringan Komputer', ruang: 'TULT 0714', jam: '2024-05-13T08:00:00Z', status: 'hadir', foto_abs: 'https://via.placeholder.com/150' }
-    ]
+    data.value = []
   }
 })
 </script>
