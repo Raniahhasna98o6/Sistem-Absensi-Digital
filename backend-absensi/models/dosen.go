@@ -31,16 +31,15 @@ func (d *Dosen) Logout() bool {
 }
 
 func (d *Dosen) MintaLaporan(periode string, idKelas int) ([]Absensi, error) {
-	// 1. Query udah gue lengkapin dengan tanggal dan lokasi
+	// 1. Tambahin a.foto_abs di baris SELECT
 	query := `
-        SELECT a.id_absensi, a.tanggal_abs, m.nama, a.status_abs, a.lokasi_abs 
+        SELECT a.id_absensi, a.tanggal_abs, m.nama, a.status_abs, a.lokasi_abs, a.foto_abs 
         FROM absensi a
         JOIN mahasiswa m ON a.nim = m.nim
         JOIN dosen_kelas dk ON m.id_kelas = dk.id_kelas
         WHERE dk.nidn = ? AND m.id_kelas = ? AND a.tanggal_abs LIKE ?
         ORDER BY a.tanggal_abs DESC`
 
-	// 2. Parameternya udah urut: NIDN Dosen, ID Kelas, Tanggal Absen
 	rows, err := config.DB.Query(query, d.NIDN, idKelas, periode+"%")
 	if err != nil {
 		return nil, err
@@ -52,8 +51,8 @@ func (d *Dosen) MintaLaporan(periode string, idKelas int) ([]Absensi, error) {
 		var item Absensi
 		var t string
 
-		// 3. Urutan Scan sekarang udah SAMA PERSIS kayak urutan SELECT
-		if err := rows.Scan(&item.IdAbsensi, &t, &item.NamaMhs, &item.StatusAbs, &item.LokasiAbs); err != nil {
+		// 2. Tambahin &item.FotoAbs di dalem Scan (Pastiin urutannya sama kayak SELECT)
+		if err := rows.Scan(&item.IdAbsensi, &t, &item.NamaMhs, &item.StatusAbs, &item.LokasiAbs, &item.FotoAbs); err != nil {
 			continue
 		}
 		item.TanggalAbs = t

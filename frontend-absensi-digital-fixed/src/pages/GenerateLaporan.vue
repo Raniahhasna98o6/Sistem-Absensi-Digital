@@ -43,25 +43,21 @@
           </div>
           
           <div class="item" v-for="(item, i) in laporan" :key="i">
-            <div class="list">
-          <div v-if="laporan.length === 0" class="empty">
-            <div class="empty-icon">📅</div>
-            Belum ada data absensi di tanggal ini.
-          </div>
-          
-          <div class="item" v-for="(item, i) in laporan" :key="i">
-                <div class="info-kiri">
-                  <span class="waktu">{{ item.nama_mhs }} ({{ formatJam(item.tanggal_abs) }})</span>
-                  
-                  <span class="lokasi">📍 {{ item.lokasi_abs || 'TULT' }}</span>
-                </div>
-                <div class="info-kanan">
-                  <span :class="['badge', item.status_abs === 'Hadir' ? 'hadir' : 'tidak']">
-                    {{ item.status_abs }}
-                  </span>
-                </div>
-              </div>
+            
+            <img :src="item.foto_abs" alt="Foto Absen" class="foto-thumb" v-if="item.foto_abs" />
+            <div class="no-foto" v-else>👤</div>
+
+            <div class="info-kiri">
+              <span class="waktu">{{ item.nama_mhs }}</span>
+              <span class="lokasi">📍 {{ item.lokasi_abs || 'TULT' }} | ⏰ {{ formatJam(item.tanggal_abs) }}</span>
             </div>
+            
+            <div class="info-kanan">
+              <span :class="['badge', item.status_abs === 'Hadir' ? 'hadir' : 'tidak']">
+                {{ item.status_abs }}
+              </span>
+            </div>
+            
           </div>
         </div>
 
@@ -168,4 +164,34 @@ onMounted(() => {
 .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 .hadir { background: #dcfce7; color: #166534; }
 .tidak { background: #fee2e2; color: #991b1b; }
+
+/* CSS buat Thumbnail Foto di List Laporan */
+.foto-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-right: 12px;
+}
+
+.no-foto {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background-color: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+/* Modifikasi info-kiri biar nyodor ke kanan dikit ngikutin foto */
+.info-kiri {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1; /* Biar dia menuhin space tengah */
+}
 </style>
