@@ -31,14 +31,17 @@ func (d *Dosen) Logout() bool {
 }
 
 func (d *Dosen) MintaLaporan(periode string, idKelas int) ([]Absensi, error) {
+	// 1. Query udah gue lengkapin dengan tanggal dan lokasi
 	query := `
-		SELECT a.id_absensi, a.tanggal_abs, a.status_abs, a.lokasi_abs 
-		FROM absensi a
-		JOIN mahasiswa m ON a.nim = m.nim
-		WHERE m.id_kelas = ? AND a.tanggal_abs LIKE ?
-		ORDER BY a.tanggal_abs DESC`
+        SELECT a.id_absensi, a.tanggal_abs, m.nama, a.status_abs, a.lokasi_abs 
+        FROM absensi a
+        JOIN mahasiswa m ON a.nim = m.nim
+        JOIN dosen_kelas dk ON m.id_kelas = dk.id_kelas
+        WHERE dk.nidn = ? AND m.id_kelas = ? AND a.tanggal_abs LIKE ?
+        ORDER BY a.tanggal_abs DESC`
 
-	rows, err := config.DB.Query(query, idKelas, periode+"%")
+	// 2. Parameternya udah urut: NIDN Dosen, ID Kelas, Tanggal Absen
+	rows, err := config.DB.Query(query, d.NIDN, idKelas, periode+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,9 @@ func (d *Dosen) MintaLaporan(periode string, idKelas int) ([]Absensi, error) {
 	for rows.Next() {
 		var item Absensi
 		var t string
-		if err := rows.Scan(&item.IdAbsensi, &t, &item.StatusAbs, &item.LokasiAbs); err != nil {
+
+		// 3. Urutan Scan sekarang udah SAMA PERSIS kayak urutan SELECT
+		if err := rows.Scan(&item.IdAbsensi, &t, &item.NamaMhs, &item.StatusAbs, &item.LokasiAbs); err != nil {
 			continue
 		}
 		item.TanggalAbs = t

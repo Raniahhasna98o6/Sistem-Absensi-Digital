@@ -3,39 +3,65 @@
     <div class="phone">
 
       <div class="header">
-        <span @click="back" style="cursor:pointer">←</span>
+        <span @click="back" class="back-btn">←</span>
         <h3>Laporan Absensi</h3>
       </div>
 
       <div class="content">
 
         <div class="filter">
-          <select class="select" v-model="periode">
-            <option value="2026-05">Mei 2026</option>
-            <option value="2026-04">April 2026</option>
-            <option value="2026-03">Maret 2026</option>
-          </select>
+          <input type="date" class="select date-picker" v-model="tanggalVal" />
           <select class="select" v-model="idKelas">
             <option value="1">IF-46-01</option>
             <option value="2">IF-46-02</option>
           </select>
         </div>
 
-        <button class="btn-generate" @click="ambilLaporan">Tampilkan Laporan</button>
+        <button class="btn-generate" @click="ambilLaporan" :disabled="isLoading">
+          {{ isLoading ? 'Memuat...' : 'Tampilkan Laporan' }}
+        </button>
 
         <div class="summary">
-          <div>Total: {{ laporan.length }}</div>
-          <div>Hadir: {{ countHadir }}</div>
-          <div>Tidak: {{ laporan.length - countHadir }}</div>
+          <div class="stat-box">
+            <span class="stat-label">Total</span>
+            <span class="stat-value">{{ laporan.length }}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label text-green">Hadir</span>
+            <span class="stat-value">{{ countHadir }}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label text-red">Tidak</span>
+            <span class="stat-value">{{ laporan.length - countHadir }}</span>
+          </div>
         </div>
 
         <div class="list">
-          <div v-if="laporan.length === 0" class="empty">Belum ada data laporan.</div>
+          <div v-if="laporan.length === 0" class="empty">
+            <div class="empty-icon">📅</div>
+            Belum ada data absensi di tanggal ini.
+          </div>
+          
           <div class="item" v-for="(item, i) in laporan" :key="i">
-            <span class="nama">{{ item.tanggal_abs }}</span>
-            <span :class="item.status_abs === 'Hadir' ? 'hadir' : 'tidak'">
-              {{ item.status_abs }}
-            </span>
+            <div class="list">
+          <div v-if="laporan.length === 0" class="empty">
+            <div class="empty-icon">📅</div>
+            Belum ada data absensi di tanggal ini.
+          </div>
+          
+          <div class="item" v-for="(item, i) in laporan" :key="i">
+                <div class="info-kiri">
+                  <span class="waktu">{{ item.nama_mhs }} ({{ formatJam(item.tanggal_abs) }})</span>
+                  
+                  <span class="lokasi">📍 {{ item.lokasi_abs || 'TULT' }}</span>
+                </div>
+                <div class="info-kanan">
+                  <span :class="['badge', item.status_abs === 'Hadir' ? 'hadir' : 'tidak']">
+                    {{ item.status_abs }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -45,20 +71,29 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
 const laporan = ref([])
-const periode = ref('2026-05')
 const idKelas = ref('1')
+const isLoading = ref(false)
+
+// Set default tanggal ke hari ini (Format: YYYY-MM-DD)
+const today = new Date().toISOString().split('T')[0]
+const tanggalVal = ref(today)
 
 const countHadir = computed(() => laporan.value.filter(m => m.status_abs === 'Hadir').length)
 
 const back = () => router.push('/BerandaDosen')
 
-// FIX: Pakai endpoint yang benar sesuai main.go, kirim nidn via query param
+// Fungsi untuk nge-cut string "2026-05-14 08:30:00" jadi jamnya aja "08:30:00"
+const formatJam = (datetime) => {
+  if (!datetime) return '-'
+  return datetime.split(' ')[1] || datetime
+}
+
 const ambilLaporan = async () => {
   const nidn = localStorage.getItem('user_nidn')
   if (!nidn) {
@@ -67,12 +102,14 @@ const ambilLaporan = async () => {
     return
   }
 
+  isLoading.value = true
   try {
     const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
     const cleanBaseURL = baseURL.replace(/\/$/, "")
 
+    // Kita kirim tanggalVal.value (misal: "2026-05-14") sebagai 'periode'
     const response = await axios.get(`${cleanBaseURL}/api/dosen/laporan`, {
-      params: { periode: periode.value, id_kelas: idKelas.value },
+      params: { periode: tanggalVal.value, id_kelas: idKelas.value },
       withCredentials: true
     })
 
@@ -80,29 +117,55 @@ const ambilLaporan = async () => {
   } catch (error) {
     console.error('Gagal mengambil laporan:', error)
     if (error.response?.status === 404) {
-      laporan.value = []
-      alert('Tidak ada data absensi untuk periode ini.')
+      laporan.value = [] // Kosongin list kalau status 404 (tidak ada data)
     } else {
       alert('Gagal mengambil laporan: ' + (error.response?.data?.message || error.message))
     }
+  } finally {
+    isLoading.value = false
   }
 }
+
+// Otomatis ambil data hari ini pas halaman pertama kali dibuka
+onMounted(() => {
+  ambilLaporan()
+})
 </script>
 
 <style scoped>
-.wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 800px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
-.header { display: flex; align-items: center; gap: 10px; padding: 15px; background: #f3f3f3; }
-.header h3 { font-weight: bold; color: black; }
-.content { padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex: 1; }
+.wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
+.phone { width: 390px; height: 800px; background: #f8f9fa; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.header { display: flex; align-items: center; gap: 15px; padding: 20px; background: white; border-bottom: 1px solid #eee; }
+.header h3 { font-weight: 700; color: #1e293b; margin: 0; font-size: 18px; }
+.back-btn { font-size: 24px; cursor: pointer; color: #64748b; font-weight: bold; }
+.content { padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
+
 .filter { display: flex; gap: 10px; }
-.select { flex: 1; padding: 10px; border-radius: 12px; border: none; background: #333; color: white; }
-.btn-generate { padding: 12px; background: #2f80ed; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
-.summary { display: flex; justify-content: space-between; background: #eaeaea; padding: 14px; border-radius: 14px; font-weight: bold; color: black; }
-.list { display: flex; flex-direction: column; gap: 12px; }
-.item { display: flex; justify-content: space-between; background: #eaeaea; padding: 14px; border-radius: 14px; }
-.nama { color: black; font-weight: 600; font-size: 13px; }
-.hadir { color: green; font-weight: bold; }
-.tidak { color: red; font-weight: bold; }
-.empty { text-align: center; color: #94a3b8; margin-top: 20px; }
+.select { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: white; color: #334155; font-size: 14px; font-weight: 500; outline: none; }
+.date-picker { font-family: inherit; }
+
+.btn-generate { padding: 14px; background: #2f80ed; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+.btn-generate:disabled { background: #94a3b8; cursor: not-allowed; }
+.btn-generate:active { transform: scale(0.98); }
+
+.summary { display: flex; justify-content: space-between; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; }
+.stat-box { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 30%; }
+.stat-label { font-size: 12px; color: #64748b; font-weight: 600; }
+.stat-value { font-size: 20px; font-weight: 800; color: #1e293b; }
+.text-green { color: #10b981; }
+.text-red { color: #ef4444; }
+
+.list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
+.empty { text-align: center; color: #94a3b8; margin-top: 40px; font-weight: 500; display: flex; flex-direction: column; gap: 10px; }
+.empty-icon { font-size: 40px; }
+
+.item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; transition: 0.2s; }
+.item:hover { border-color: #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.info-kiri { display: flex; flex-direction: column; gap: 4px; }
+.waktu { color: #1e293b; font-weight: 700; font-size: 15px; }
+.lokasi { color: #64748b; font-size: 12px; font-weight: 500; }
+
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.hadir { background: #dcfce7; color: #166534; }
+.tidak { background: #fee2e2; color: #991b1b; }
 </style>

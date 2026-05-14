@@ -16,6 +16,7 @@ type Absensi struct {
 	FotoAbs    string  `json:"foto_abs"`
 	Latitude   float64 `json:"latitude"`
 	Longitude  float64 `json:"longitude"`
+	NamaMhs    string  `json:"nama_mhs"`
 }
 
 const (
