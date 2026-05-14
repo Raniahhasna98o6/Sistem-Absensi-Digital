@@ -12,7 +12,6 @@ import Akun from '../pages/Akun.vue'
 import Riwayat from '../pages/Riwayat.vue'
 import GenerateLaporan from '../pages/GenerateLaporan.vue'
 import Role from '../pages/Role.vue'
-import Register from '../pages/Register.vue'
 const routes = [
   {
     path: '/',
@@ -71,11 +70,6 @@ const routes = [
   path: '/laporan',
   component: GenerateLaporan
   },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register
-  }
 ]
 
 const router = createRouter({
