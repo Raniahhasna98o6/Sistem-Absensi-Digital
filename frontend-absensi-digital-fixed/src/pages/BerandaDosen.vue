@@ -83,7 +83,7 @@ const logout = async () => {
     console.error('Server error saat logout:', error)
   } finally {
     localStorage.clear()
-    router.push('/login?role=dosen')
+    router.push('/role')
   }
 }
 
@@ -129,7 +129,7 @@ onMounted(() => {
 
   if (savedRole !== 'dosen' && savedRole !== 'lecturer') {
     alert('Akses ditolak! Halaman ini khusus Dosen.')
-    router.push('/login?role=dosen')
+    router.push('/login?role=lecturer')
     return
   }
 
