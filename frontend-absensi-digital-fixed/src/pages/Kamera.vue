@@ -74,7 +74,7 @@ const takePhoto = () => {
   ctx.drawImage(video.value, 0, 0, canvas.value.width, canvas.value.height)
 
   // Konversi pake kualitas yang agak diturunin (0.7)
-  const image = canvas.value.toDataURL("image/jpeg", 0.7)
+  const image = canvas.value.toDataURL("image/png", 1.0)
 
   // Simpan foto
   localStorage.setItem('captured_photo', image)
