@@ -130,6 +130,28 @@ func main() {
 		}
 	})
 
+	// 6.5. AMBIL PROFIL DOSEN
+	r.GET("/api/dosen/profil", func(c *gin.Context) {
+		// Ambil NIDN dari query param (biar aman buat frontend Vercel) atau fallback ke cookie
+		nidn := c.Query("nidn")
+		if nidn == "" {
+			nidn, _ = c.Cookie("nidn_user")
+		}
+
+		if nidn == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "NIDN tidak ditemukan, sesi habis"})
+			return
+		}
+
+		d := models.Dosen{}
+		profil, err := d.AmbilProfil(nidn)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Profil tidak ditemukan"})
+			return
+		}
+		c.JSON(http.StatusOK, profil)
+	})
+
 	// 7. LAPORAN DOSEN
 	r.GET("/api/dosen/laporan", func(c *gin.Context) {
 		// Coba cookie dulu, fallback ke query param

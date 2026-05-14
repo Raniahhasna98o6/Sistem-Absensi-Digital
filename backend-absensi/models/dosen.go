@@ -7,8 +7,12 @@ import (
 
 type Dosen struct {
 	User
-	NIDN string `json:"nidn"`
-	Nama string `json:"nama"`
+	NIDN     string `json:"nidn"`
+	Nama     string `json:"nama"`
+	Prodi    string `json:"prodi"`
+	Fakultas string `json:"fakultas"`
+	Email    string `json:"email"`
+	NoHP     string `json:"nohp"`
 }
 
 func (d *Dosen) Login(email, password string) bool {
@@ -24,6 +28,22 @@ func (d *Dosen) Login(email, password string) bool {
 	}
 
 	return d.Password != "" && d.Password == password
+}
+
+// --- FUNGSI BARU BUAT AMBIL PROFIL DOSEN ---
+func (d *Dosen) AmbilProfil(nidn string) (Dosen, error) {
+	var profil Dosen
+	query := `
+		SELECT d.nidn, d.nama, d.prodi, d.fakultas, u.email, d.nohp 
+		FROM dosen d 
+		JOIN User u ON d.id_user = u.id_user 
+		WHERE d.nidn = ?`
+
+	err := config.DB.QueryRow(query, nidn).Scan(&profil.NIDN, &profil.Nama, &profil.Prodi, &profil.Fakultas, &profil.Email, &profil.NoHP)
+	if err != nil {
+		return profil, err
+	}
+	return profil, nil
 }
 
 func (d *Dosen) Logout() bool {

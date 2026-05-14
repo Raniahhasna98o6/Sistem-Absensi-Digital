@@ -44,8 +44,10 @@
           
           <div class="item" v-for="(item, i) in laporan" :key="i">
             
-            <img :src="item.foto_abs" alt="Foto Absen" class="foto-thumb" v-if="item.foto_abs" />
-            <div class="no-foto" v-else>👤</div>
+            <div class="photo-container">
+              <img v-if="item.foto_abs" :src="formatImageBase64(item.foto_abs)" alt="Foto Absen" class="absensi-img" />
+              <div v-else class="no-photo">📷</div>
+            </div>
 
             <div class="info-kiri">
               <span class="waktu">{{ item.nama_mhs }}</span>
@@ -126,6 +128,16 @@ const ambilLaporan = async () => {
 onMounted(() => {
   ambilLaporan()
 })
+
+// --- FUNGSI FORMAT BASE64 ---
+const formatImageBase64 = (base64String) => {
+  if (!base64String) return '';
+  const cleanString = base64String.trim();
+  if (cleanString.startsWith('data:image')) {
+    return cleanString;
+  }
+  return `data:image/jpeg;base64,${cleanString}`;
+}
 </script>
 
 <style scoped>
@@ -157,37 +169,36 @@ onMounted(() => {
 
 .item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; transition: 0.2s; }
 .item:hover { border-color: #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-.info-kiri { display: flex; flex-direction: column; gap: 4px; }
-.waktu { color: #1e293b; font-weight: 700; font-size: 15px; }
-.lokasi { color: #64748b; font-size: 12px; font-weight: 500; }
 
 .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 .hadir { background: #dcfce7; color: #166534; }
 .tidak { background: #fee2e2; color: #991b1b; }
 
-/* CSS buat Thumbnail Foto di List Laporan */
-.foto-thumb {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  margin-right: 12px;
-}
-
-.no-foto {
+/* --- CSS FOTO PERSIS KAYAK RIWAYAT.VUE --- */
+.photo-container {
   width: 50px;
   height: 50px;
   border-radius: 12px;
-  background-color: #f1f5f9;
+  overflow: hidden;
+  background: #e2e8f0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 24px;
+  justify-content: center;
+  flex-shrink: 0;
   margin-right: 12px;
 }
 
-/* Modifikasi info-kiri biar nyodor ke kanan dikit ngikutin foto */
+.absensi-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-photo {
+  font-size: 20px;
+  opacity: 0.5;
+}
+
 .info-kiri {
   display: flex;
   flex-direction: column;
