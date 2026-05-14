@@ -63,7 +63,7 @@ const goBack = () => router.push('/beranda')
 // Titik Koordinat TULT (Pusat Kampus)
 const TELYU_LAT = -6.974001
 const TELYU_LNG = 107.630339
-const RADIUS_MAKSIMAL = 100 // Ganti jadi 100 meter aja biar ketat
+const RADIUS_MAKSIMAL = 800 // Ganti jadi 100 meter aja biar ketat
 
 const koordinat = ref({ lat: TELYU_LAT, lng: TELYU_LNG }) 
 const jarakMeter = ref(0)

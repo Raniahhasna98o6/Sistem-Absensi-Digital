@@ -8,7 +8,10 @@
       </div>
 
       <div class="content">
-        <img :src="image" class="photo" />
+        <div class = "border">
+          <img :src="image" class="photo" />
+        </div>
+        
 
         <div :class="['status', activeClass.diLuarJangkauan ? 'status-bahaya' : 'status-aman']">
           {{ activeClass.diLuarJangkauan ? '⚠️ Di Luar Jangkauan' : '📍 Dalam Area Kampus' }}
@@ -125,6 +128,9 @@ const kirim = async () => {
 </script>
 
 <style scoped>
+.border{
+  transform: scaleX(-1);
+}
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
 .phone { width: 390px; height: 800px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .header { display: flex; align-items: center; gap: 10px; padding: 16px; background: #f3f3f3; }

@@ -104,6 +104,11 @@ const takePhoto = () => {
   flex-direction: column;
 }
 
+/* Efek Cermin buat Preview Video */
+.camera-container video {
+  transform: scaleX(-1);
+}
+
 /* --- TAMPILAN HEADER --- */
 .header {
   display: flex;

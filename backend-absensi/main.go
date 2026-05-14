@@ -207,6 +207,22 @@ func main() {
 		c.JSON(http.StatusOK, profil)
 	})
 
+	// AMBIL DAFTAR KELAS DOSEN
+	r.GET("/api/dosen/daftar-kelas", func(c *gin.Context) {
+		nidn := c.Query("nidn")
+		if nidn == "" {
+			nidn, _ = c.Cookie("nidn_user")
+		}
+
+		d := models.Dosen{NIDN: nidn}
+		list, err := d.AmbilDaftarKelas()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal ambil daftar kelas"})
+			return
+		}
+		c.JSON(http.StatusOK, list)
+	})
+
 	// 9. PORT AZURE
 	port := os.Getenv("PORT")
 	if port == "" {

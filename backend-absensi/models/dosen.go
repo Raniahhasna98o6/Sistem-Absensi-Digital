@@ -85,3 +85,30 @@ func (d *Dosen) MintaLaporan(periode string, idKelas int) ([]Absensi, error) {
 
 	return laporan, nil
 }
+
+// Fungsi buat ngambil daftar kelas yang diajar dosen tertentu
+func (d *Dosen) AmbilDaftarKelas() ([]map[string]interface{}, error) {
+	query := `
+		SELECT k.id_kelas, k.nama_kelas 
+		FROM kelas k
+		JOIN dosen_kelas dk ON k.id_kelas = dk.id_kelas
+		WHERE dk.nidn = ?`
+
+	rows, err := config.DB.Query(query, d.NIDN)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var daftarKelas []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var nama string
+		rows.Scan(&id, &nama)
+		daftarKelas = append(daftarKelas, map[string]interface{}{
+			"id":   id,
+			"nama": nama,
+		})
+	}
+	return daftarKelas, nil
+}

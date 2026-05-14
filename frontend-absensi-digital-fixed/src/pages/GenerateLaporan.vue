@@ -11,9 +11,11 @@
 
         <div class="filter">
           <input type="date" class="select date-picker" v-model="tanggalVal" />
+          
           <select class="select" v-model="idKelas">
-            <option value="1">IF-46-01</option>
-            <option value="2">IF-46-02</option>
+            <option v-for="kelas in listKelas" :key="kelas.id" :value="kelas.id">
+              {{ kelas.nama }}
+            </option>
           </select>
         </div>
 
@@ -78,6 +80,32 @@ const laporan = ref([])
 const idKelas = ref('1')
 const isLoading = ref(false)
 
+const idKelas = ref('') // Biarkan kosong dulu
+const listKelas = ref([]) // State buat nampung daftar kelas dari DB
+
+const ambilDaftarKelas = async () => {
+  const nidn = localStorage.getItem('user_nidn')
+  try {
+    const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
+    const response = await axios.get(`${baseURL.replace(/\/$/, "")}/api/dosen/daftar-kelas?nidn=${nidn}`)
+    
+    listKelas.value = response.data
+    
+    // Set default pilihan ke kelas pertama kalau ada datanya
+    if (listKelas.value.length > 0) {
+      idKelas.value = listKelas.value[0].id
+      // Langsung panggil laporan buat kelas pertama ini
+      ambilLaporan()
+    }
+  } catch (error) {
+    console.error("Gagal load daftar kelas:", error)
+  }
+}
+
+onMounted(() => {
+  ambilDaftarKelas() // Ganti ambilLaporan() dengan ini
+})
+
 // Set default tanggal ke hari ini (Format: YYYY-MM-DD)
 const today = new Date().toISOString().split('T')[0]
 const tanggalVal = ref(today)
@@ -123,11 +151,6 @@ const ambilLaporan = async () => {
     isLoading.value = false
   }
 }
-
-// Otomatis ambil data hari ini pas halaman pertama kali dibuka
-onMounted(() => {
-  ambilLaporan()
-})
 
 // --- FUNGSI FORMAT BASE64 ---
 const formatImageBase64 = (base64String) => {
