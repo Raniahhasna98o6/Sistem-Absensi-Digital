@@ -10,9 +10,9 @@
       <div class="content">
 
         <div class="filter">
-          <input type="date" class="select date-picker" v-model="tanggalVal" />
+          <input type="date" class="select date-picker" v-model="tanggalVal" @change="ambilLaporan" />
           
-          <select class="select" v-model="idKelas">
+          <select class="select" v-model="idKelas" @change="ambilLaporan">
             <option v-for="kelas in listKelas" :key="kelas.id" :value="kelas.id">
               {{ kelas.nama }}
             </option>
@@ -77,11 +77,10 @@ import axios from 'axios'
 
 const router = useRouter()
 const laporan = ref([])
-const listKelas = ref([]) // State buat nampung daftar kelas dari DB
-const idKelas = ref('') // Biarkan kosong dulu, nanti diisi otomatis
+const listKelas = ref([]) 
+const idKelas = ref('') 
 const isLoading = ref(false)
 
-// Set default tanggal ke hari ini (Format: YYYY-MM-DD)
 const today = new Date().toISOString().split('T')[0]
 const tanggalVal = ref(today)
 
@@ -89,13 +88,11 @@ const countHadir = computed(() => laporan.value.filter(m => m.status_abs === 'Ha
 
 const back = () => router.push('/BerandaDosen')
 
-// Fungsi untuk nge-cut string "2026-05-14 08:30:00" jadi jamnya aja "08:30:00"
 const formatJam = (datetime) => {
   if (!datetime) return '-'
   return datetime.split(' ')[1] || datetime
 }
 
-// --- FUNGSI FORMAT BASE64 ---
 const formatImageBase64 = (base64String) => {
   if (!base64String) return '';
   const cleanString = base64String.trim();
@@ -105,8 +102,9 @@ const formatImageBase64 = (base64String) => {
   return `data:image/jpeg;base64,${cleanString}`;
 }
 
-// 1. Fungsi Ambil Laporan (Ditaruh di atas biar bisa dipanggil sama fungsi lain)
 const ambilLaporan = async () => {
+  if (!idKelas.value) return; // Jangan nembak API kalau kelas belum ada
+
   const nidn = localStorage.getItem('user_nidn')
   if (!nidn) {
     alert('Sesi habis, silakan login ulang!')
@@ -119,9 +117,12 @@ const ambilLaporan = async () => {
     const baseURL = import.meta.env.VITE_API_URL || 'https://sistemabsensi-emcyfabpgpcuhaf5.indonesiacentral-01.azurewebsites.net'
     const cleanBaseURL = baseURL.replace(/\/$/, "")
 
-    // Kita kirim tanggalVal.value (misal: "2026-05-14") sebagai 'periode'
     const response = await axios.get(`${cleanBaseURL}/api/dosen/laporan`, {
-      params: { periode: tanggalVal.value, id_kelas: idKelas.value },
+      params: { 
+        periode: tanggalVal.value, 
+        id_kelas: idKelas.value,
+        nidn: nidn // Cadangan NIDN buat di HP
+      },
       withCredentials: true
     })
 
@@ -129,7 +130,7 @@ const ambilLaporan = async () => {
   } catch (error) {
     console.error('Gagal mengambil laporan:', error)
     if (error.response?.status === 404) {
-      laporan.value = [] // Kosongin list kalau status 404 (tidak ada data)
+      laporan.value = [] 
     } else {
       alert('Gagal mengambil laporan: ' + (error.response?.data?.message || error.message))
     }
@@ -138,7 +139,6 @@ const ambilLaporan = async () => {
   }
 }
 
-// 2. Fungsi Ambil Daftar Kelas 
 const ambilDaftarKelas = async () => {
   const nidn = localStorage.getItem('user_nidn')
   try {
@@ -149,18 +149,15 @@ const ambilDaftarKelas = async () => {
     
     listKelas.value = response.data
     
-    // Set default pilihan ke kelas pertama kalau ada datanya
     if (listKelas.value.length > 0) {
       idKelas.value = listKelas.value[0].id
-      // Langsung panggil laporan buat kelas pertama ini
-      ambilLaporan()
+      ambilLaporan() 
     }
   } catch (error) {
     console.error("Gagal load daftar kelas:", error)
   }
 }
 
-// Otomatis ambil daftar kelas (yang nantinya manggil laporan juga) pas halaman dibuka
 onMounted(() => {
   ambilDaftarKelas() 
 })
@@ -200,7 +197,6 @@ onMounted(() => {
 .hadir { background: #dcfce7; color: #166534; }
 .tidak { background: #fee2e2; color: #991b1b; }
 
-/* --- CSS FOTO PERSIS KAYAK RIWAYAT.VUE --- */
 .photo-container {
   width: 50px;
   height: 50px;
@@ -229,6 +225,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1; /* Biar dia menuhin space tengah */
+  flex: 1; 
 }
+.waktu { color: #1e293b; font-weight: 700; font-size: 15px; }
+.lokasi { color: #64748b; font-size: 12px; font-weight: 500; }
 </style>
