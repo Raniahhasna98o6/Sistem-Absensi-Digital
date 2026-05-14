@@ -186,6 +186,27 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})
 	})
 
+	// AMBIL PROFIL MAHASISWA
+	r.GET("/api/mahasiswa/profil", func(c *gin.Context) {
+		nim := c.Query("nim")
+		if nim == "" {
+			nim, _ = c.Cookie("nim_user")
+		}
+
+		if nim == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "NIM tidak ditemukan, sesi habis"})
+			return
+		}
+
+		m := models.Mahasiswa{}
+		profil, err := m.GetAttribute(nim)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Profil tidak ditemukan"})
+			return
+		}
+		c.JSON(http.StatusOK, profil)
+	})
+
 	// 9. PORT AZURE
 	port := os.Getenv("PORT")
 	if port == "" {
