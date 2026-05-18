@@ -23,13 +23,10 @@
           <h3 class="card-title">Absensi Hari Ini</h3>
           <div class="card-inner">
             <div class="row">
-              <svg class="icon-calendar" viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
+              <img :src="kalender" class="logo" width="60"/>
               <div class="text-group">
-                <p class="matkul">Jaringan Komputer</p>
-                <p class="jam">08.00 - 10.00</p>
+                <p>Jaringan Komputer</p>
+                <p>08.00 - 10.00</p>
               </div>
             </div>
             <button @click="absen">ABSEN SEKARANG</button>
@@ -40,19 +37,13 @@
         <h3 class="fitur-title">Fitur Website</h3>
         <div class="menu">
           <div class="menu-card" @click="keAkun">
-            <svg class="menu-icon" viewBox="0 0 24 24">
-              <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5z"/>
-              <path d="M2 22c0-4 4-7 10-7s10 3 10 7"/>
-            </svg>
-            <p>Akun</p>
+            <img :src="akun" class="menu-icon"/>
+            <p><b>Akun</b></p>
           </div>
 
           <div class="menu-card" @click="keRiwayat">
-            <svg class="menu-icon" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M12 7v5l3 2"/>
-            </svg>
-            <p>Riwayat Absensi</p>
+            <img :src="riwayat" class="menu-icon"/>
+            <p><b>Riwayat Absensi</b></p>
           </div>
         </div>
       </div>
@@ -67,6 +58,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import kalender from '../assets/marketeq_date.svg'
+import akun from '../assets/streamline-plump-color_user-multiple-accounts-flat.svg'
+import riwayat from '../assets/fluent-color_history-28.svg'
 
 // --- INISIALISASI STATE & ROUTER ---
 const router = useRouter()
@@ -144,7 +138,7 @@ onMounted(() => {
 }
 
 .red {
-  background: #ff2d2d;
+  background: #ea3236;
   padding: 20px;
   color: white;
   flex: 1;
@@ -167,8 +161,9 @@ onMounted(() => {
 
 .card-title {
   text-align: left;
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 20px;
+  margin-top: -3px;
+  margin-bottom: 15px;
 }
 
 .card-inner {
@@ -187,14 +182,7 @@ onMounted(() => {
 .text-group {
   display: flex;
   flex-direction: column;
-}
-
-.icon-calendar {
-  width: 32px;
-  height: 32px;
-  stroke: black;
-  fill: none;
-  stroke-width: 2.5;
+  text-align: left;
 }
 
 button {
@@ -206,6 +194,7 @@ button {
   border: none;
   border-radius: 12px;
   font-weight: bold;
+  font-size: 18px;
   cursor: pointer;
 }
 
@@ -235,12 +224,12 @@ button {
 }
 
 .menu-icon {
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   stroke: black;
   fill: none;
   stroke-width: 3;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .bottom {

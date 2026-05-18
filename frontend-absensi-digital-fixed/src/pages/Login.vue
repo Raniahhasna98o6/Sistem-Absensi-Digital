@@ -4,8 +4,8 @@
 
       <!-- HEADER LOGIN -->
       <div class="header">
-        <h2>Sistem Absensi Digital</h2>
-        <p>Silakan masuk ke akun Anda</p>
+        <h1>Sistem Absensi Digital</h1>
+        <p>Silakan Login ke akun Anda</p>
       </div>
 
       <!-- LOGO APLIKASI -->
@@ -112,22 +112,39 @@ const login = async () => {
 }
 
 .header {
-  background: #ff2d2d;
+  background: #ea3236;
   color: white;
   text-align: center;
-  padding: 40px 20px 90px;
+  font-family: 'Poppins', sans-serif;
+  padding: 45px 20px 40px;
   border-bottom-left-radius: 50% 25%;
   border-bottom-right-radius: 50% 25%;
+}
+.header h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 3px 15px rgba(255, 255, 255, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+.header p {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 15px;
 }
 
 .logo-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: -70px;
+  margin-top: 15px;
+  margin-bottom: -10px;
 }
 
 .logo {
-  width: 95px;
+  width: 75px;
 }
 
 .form {
