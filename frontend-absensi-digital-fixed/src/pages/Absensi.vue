@@ -8,14 +8,12 @@
       </div>
 
       <div class="red">
-
         <div class="card">
-
           <h2 class="judul">Mata Kuliah Hari Ini</h2>
           <div class="divider"></div>
 
           <div class="row">
-            <div class="icon">📅</div>
+            <img :src="kalender" class="calendar-icon" />
             <div class="info">
               <p class="matkul">Jaringan Komputer</p>
               <p class="jam">08.00 - 10.00</p>
@@ -25,7 +23,7 @@
           <div class="divider"></div>
 
           <div class="row">
-            <div class="icon">📍</div>
+            <img :src="location" class="location-icon" />
             <p class="lokasi">TULT 0714</p>
           </div>
 
@@ -36,15 +34,19 @@
         </div>
 
         <div class="card bottom-card">
-
           <div :class="['lokasi-box', diLuarJangkauan ? 'luar' : 'dalam']">
-            {{ diLuarJangkauan ? `⚠️ Di Luar Jangkauan (${jarakMeter}m)` : `📍 Dalam Area Kampus (${jarakMeter}m)` }}
+            <img
+              :src="diLuarJangkauan ? warning : location"
+              class="lokasi-icon"
+            />
+            <span>
+              {{ diLuarJangkauan 
+              ? `Di Luar Jangkauan (${jarakMeter}m)` 
+              : `Dalam Area Kampus (${jarakMeter}m)` }}
+            </span>
           </div>
-
           <button @click="ambilFoto">AMBIL FOTO</button>
-
         </div>
-
       </div>
 
       <div class="bottom"></div>
@@ -56,6 +58,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import kalender from '../assets/marketeq_date.svg'
+import location from '../assets/streamline-plump-color--location-pin-3.svg'
+import warning from '../assets/fluent-emoji-flat--warning.svg'
 
 const router = useRouter()
 const goBack = () => router.push('/beranda')
@@ -155,7 +160,7 @@ onUnmounted(() => {
 .phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .back { font-size: 22px; cursor: pointer; color: #000; }
 /* TOPBAR */
-.topbar { padding: 15px; background: #f3f3f3; display: flex; align-items: center; gap: 10px; }
+.topbar { margin-top: 25px; padding: 15px; background: #f3f3f3; display: flex; align-items: center; gap: 10px; }
 .topbar span { font-size: 20px; cursor: pointer; }
 .topbar h3 { font-weight: bold; color: black; font-size: 18px; margin: 0; }
 /* RED AREA */
@@ -168,19 +173,26 @@ onUnmounted(() => {
 /* ROW */
 .row { display: flex; align-items: center; gap: 12px; }
 .icon { font-size: 22px; }
-.matkul { font-weight: bold; font-size: 16px; color: black; margin: 0;}
-.jam { font-size: 14px; color: black; margin: 0; }
+.calendar-icon { width: 54px; height: 54px; }
+.matkul { font-weight: bold; font-size: 16px; color: black; margin: 0; text-align: left;}
+.jam { font-size: 14px; color: black; margin: 0; text-align: left;}
 .lokasi { font-size: 15px; font-weight: bold; color: black; margin: 0;}
+.lokasi-icon { width: 22px; height: 22px; object-fit: contain;}
+.location-icon { width: 30px; height: 30px; }
 /* MAP */
 .map { width: 100%; height: 200px; border-radius: 15px; z-index: 1; border: none; }
 /* CARD BAWAH */
-.bottom-card { margin-top: -5px; }
+.bottom-card { margin: 0; }
 
 /* FIX: STYLE LOKASI BOX DINAMIS */
 .lokasi-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px;
   border-radius: 12px;
   text-align: center;
+  justify-content: center;
   font-weight: bold;
   margin-bottom: 12px;
   transition: background-color 0.3s;

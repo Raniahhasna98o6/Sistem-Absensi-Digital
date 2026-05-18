@@ -5,10 +5,9 @@
       <!-- HEADER TOPBAR -->
       <div class="topbar">
         <div class="top-left">
-          <svg class="icon-user" viewBox="0 0 24 24">
-            <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5z"/>
-            <path d="M2 22c0-4 4-7 10-7s10 3 10 7"/>
-          </svg>
+          <div class="profile">
+            <img src="https://i.pravatar.cc/150?img=12" alt="profile" width="40" style="border-radius: 50%;"/>
+          </div>
           <h3>Beranda</h3>
         </div>
       </div>
@@ -25,7 +24,7 @@
             <div class="row">
               <img :src="kalender" class="logo" width="60"/>
               <div class="text-group">
-                <p>Jaringan Komputer</p>
+                <p><b>Jaringan Komputer</b></p>
                 <p>08.00 - 10.00</p>
               </div>
             </div>
@@ -34,16 +33,18 @@
         </div>
 
         <!-- MENU FITUR UTAMA -->
-        <h3 class="fitur-title">Fitur Website</h3>
-        <div class="menu">
-          <div class="menu-card" @click="keAkun">
-            <img :src="akun" class="menu-icon"/>
-            <p><b>Akun</b></p>
-          </div>
-
-          <div class="menu-card" @click="keRiwayat">
-            <img :src="riwayat" class="menu-icon"/>
-            <p><b>Riwayat Absensi</b></p>
+        <div class="card">
+          <h3 class="fitur-title">Fitur Website</h3>
+          <div class="menu">
+            <div class="menu-card" @click="keAkun">
+              <img :src="akun" class="menu-icon"/>
+              <p>Akun</p>
+            </div>
+            
+            <div class="menu-card" @click="keRiwayat">
+              <img :src="riwayat" class="menu-icon"/>
+              <p>Riwayat Absensi</p>
+            </div>
           </div>
         </div>
       </div>
@@ -118,12 +119,14 @@ onMounted(() => {
 .topbar {
   padding: 15px;
   background: #f3f3f3;
+  margin-top: 15px;
+  margin-bottom: -15px;
 }
 
 .top-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .topbar h3 {
@@ -157,6 +160,7 @@ onMounted(() => {
   border-radius: 20px;
   padding: 15px;
   color: black;
+  margin-bottom: 20px;
 }
 
 .card-title {
@@ -201,7 +205,7 @@ button {
 /* --- MENU NAVIGATION CARDS --- */
 .fitur-title {
   text-align: left;
-  margin-top: 25px;
+  margin-top: 0;
   font-size: 18px;
   font-weight: bold;
 }
@@ -224,12 +228,11 @@ button {
 }
 
 .menu-icon {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   stroke: black;
   fill: none;
   stroke-width: 3;
-  margin-bottom: 5px;
 }
 
 .bottom {

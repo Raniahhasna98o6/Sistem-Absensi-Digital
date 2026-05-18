@@ -96,7 +96,7 @@ const takePhoto = () => {
 
 .phone {
   width: 390px;
-  height: 800px;
+  height: 780px;
   background: #fff;
   border-radius: 30px;
   overflow: hidden;

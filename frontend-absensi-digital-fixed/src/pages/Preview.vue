@@ -11,7 +11,6 @@
         <div class = "border">
           <img :src="image" class="photo" />
         </div>
-        
 
         <div :class="['status', activeClass.diLuarJangkauan ? 'status-bahaya' : 'status-aman']">
           {{ activeClass.diLuarJangkauan ? '⚠️ Di Luar Jangkauan' : '📍 Dalam Area Kampus' }}
@@ -132,12 +131,12 @@ const kirim = async () => {
   transform: scaleX(-1);
 }
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 800px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .header { display: flex; align-items: center; gap: 10px; padding: 16px; background: #f3f3f3; }
 .header h3 { font-weight: 700; font-size: 18px; color: black; margin: 0; }
-.back { font-size: 20px; cursor: pointer; }
+.back { font-size: 20px; cursor: pointer; color: black; }
 .content { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 12px; }
-.photo { width: 100%; height: 260px; object-fit: cover; border-radius: 20px; }
+.photo { width: 100%; height: 400px; object-fit: cover; border-radius: 20px; }
 .status { padding: 12px; border-radius: 20px; font-weight: 600; text-align: center; }
 .status-aman { background: #e9e9e9; color: #555; }
 .status-bahaya { background: #ffebee; color: #c62828; }
@@ -151,4 +150,26 @@ const kirim = async () => {
 .ulang { flex: 1; background: #ff3b30; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
 .kirim { flex: 1; background: #2f80ed; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
 .kirim:disabled { background: #9e9e9e; cursor: not-allowed; }
+
+/* FIX: STYLE LOKASI BOX DINAMIS */
+.lokasi-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 12px;
+  transition: background-color 0.3s;
+}
+.lokasi-box.dalam {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+.lokasi-box.luar {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
 </style>
