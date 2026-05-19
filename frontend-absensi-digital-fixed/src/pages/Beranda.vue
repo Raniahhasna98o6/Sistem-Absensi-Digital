@@ -117,9 +117,9 @@ onMounted(() => {
 
 /* --- STYLE HEADER & TEMA --- */
 .topbar {
-  padding: 15px;
+  padding: 25px;
   background: #f3f3f3;
-  margin-top: 15px;
+  margin-top: 0px;
   margin-bottom: -15px;
 }
 
