@@ -147,7 +147,7 @@ onMounted(async () => {
 /* BACKGROUND */
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
 /* PHONE */
-.phone { width: 390px; height: 800px; background: #f6f6f6; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.phone { width: 390px; height: 780px; background: #f6f6f6; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 /* HEADER */
 .header { display: flex; align-items: center; gap: 10px; padding: 16px; background: #ffffff; }
 .header h3 { font-weight: 700; font-size: 18px; color: black; }
@@ -158,7 +158,7 @@ onMounted(async () => {
 .profile { margin-top: 10px; }
 .profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
 /* CARD FIX UTAMA */
-.card { width: 100%; max-width: 330px; background: white; border-radius: 18px; padding: 20px; box-shadow: 0 10px 18px rgba(0,0,0,0.12); border: 1px solid #ff4d4f; }
+.card { width: 100%; max-width: 330px; background: white; border-radius: 18px; padding: 20px; box-shadow: 0 10px 18px rgba(0,0,0,0.12); border: 1px solid #ea3236; }
 /* NAMA CARD */
 .nama-card { text-align: center; }
 .nama-card h2 { font-size: 20px; font-weight: 700; color: black; }
@@ -168,5 +168,5 @@ onMounted(async () => {
 .row { display: flex; justify-content: space-between; padding: 10px 6px; color: black; }
 .divider { height: 1px; background: #ddd; }
 /* LOGOUT */
-.logout { width: 100%; max-width: 330px; padding: 16px; background: red; border-radius: 16px; border: 1px solid pink; color: white; font-weight: 700; font-size: 20px; margin-top: 20px; box-shadow: 0 6px 12px rgba(255,0,0,0.3); }
+.logout { width: 100%; max-width: 330px; padding: 16px; background: #d32f2f; border-radius: 16px; border: 1px solid pink; color: white; font-weight: 700; font-size: 20px; margin-top: 20px; box-shadow: 0 6px 12px rgba(255,0,0,0.3); }
 </style>

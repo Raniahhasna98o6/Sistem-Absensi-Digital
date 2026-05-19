@@ -151,7 +151,7 @@ const goToLogin = () => {
   align-items: center;
   border-radius: 18px;
   border: 1px solid #ddd;
-  background: #f6f6f6;
+  background: white;
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
@@ -193,7 +193,7 @@ button {
   border: none;
   border-radius: 12px;
   background: #ea3236;
-  box-shadow: #999 1px 3px 8px;
+  box-shadow: #999 1px 2px 8px;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -205,6 +205,7 @@ button {
 
 button:disabled {
   background: gray;
+  color: #f3f3f3;
   cursor: not-allowed;
 }
 </style>

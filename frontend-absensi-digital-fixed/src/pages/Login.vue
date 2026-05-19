@@ -192,7 +192,7 @@ button {
   padding: 10px;
   margin-bottom: 15px;
   margin: 0 auto 15px auto;
-  box-shadow: #999 1px 3px 8px;
+  box-shadow: #999 1px 2px 8px;
   background: #ea3236;
   color: white;
   border: none;

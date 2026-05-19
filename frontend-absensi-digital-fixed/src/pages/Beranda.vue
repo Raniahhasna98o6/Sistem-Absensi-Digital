@@ -15,7 +15,7 @@
       <!-- AREA KONTEN (TEMA MERAH) -->
       <div class="red">
         <!-- Nama user dinamis dari database Azure -->
-        <h2 class="title">Halo,<br> {{ user.nama || 'Mahasiswa' }}</h2>
+        <h2 class="title">Halo,<br> <b>{{ user.nama || 'Mahasiswa' }}</b></h2>
 
         <!-- KARTU ABSENSI HARI INI -->
         <div class="card">
@@ -150,7 +150,7 @@ onMounted(() => {
 .title {
   text-align: left;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 400;
   margin-bottom: 15px;
 }
 

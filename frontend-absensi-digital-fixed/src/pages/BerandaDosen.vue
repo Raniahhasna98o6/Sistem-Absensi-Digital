@@ -8,14 +8,14 @@
       </div>
 
       <div class="red">
-        <h2 class="title">Halo, {{ user.nama || 'Dosen' }}</h2>
+        <h2 class="title">Halo,<br> <b>{{ user.nama || 'Dosen' }}</b></h2>
 
         <div class="card">
           <div class="profile">
             <img src="https://i.pravatar.cc/100" class="avatar" />
-            <div>
+            <div class="identitas">
               <p class="nama">{{ user.nama }}</p>
-              <p class="nim">{{ user.nidn }}</p>
+              <p class="nim">NIDN: {{ user.nidn }}</p>
             </div>
           </div>
 
@@ -140,15 +140,16 @@ onMounted(() => {
 
 <style scoped>
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 800px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .header { display: flex; align-items: center; gap: 10px; padding: 15px; background: #f3f3f3; }
 .beranda { color: black; font-weight: 700; margin: 0; }
-.red { background: #ff2d2d; padding: 20px; flex: 1; color: white; display: flex; flex-direction: column;}
-.title { font-size: 24px; font-weight: bold; margin-bottom: 15px; text-align: left; }
+.red { background: #ea3236; padding: 20px; flex: 1; color: white; display: flex; flex-direction: column;}
+.title { font-size: 24px; font-weight:400; margin-bottom: 15px; text-align: left; }
 
 .card { background: #f3f3f3; color: black; border-radius: 20px; padding: 16px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
 .avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ddd; }
+.identitas { display: flex; flex-direction: column; align-items: flex-start; }
 .nama { font-weight: 800; font-size: 16px; margin: 0; }
 .nim { font-size: 13px; color: #666; margin: 0; font-weight: 600; }
 

@@ -157,7 +157,7 @@ onUnmounted(() => {
 /* BACKGROUND */
 .wrapper { background: #0f172a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
 /* PHONE */
-.phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.phone { width: 390px; height: 780px; background: #f3f3f3; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .back { font-size: 22px; cursor: pointer; color: #000; }
 /* TOPBAR */
 .topbar { 
