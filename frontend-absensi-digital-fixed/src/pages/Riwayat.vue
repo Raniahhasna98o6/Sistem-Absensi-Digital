@@ -8,7 +8,7 @@
       </div>
 
       <div class="content">
-        <div class="tabs">
+        <div class="tabs" :class="active">
           <button :class="{ active: active === 'semua' }" @click="active = 'semua'">Semua</button>
           <button :class="{ active: active === 'hadir' }" @click="active = 'hadir'">Hadir</button>
           <button :class="{ active: active === 'tidak' }" @click="active = 'tidak'">Tidak Hadir</button>
@@ -146,16 +146,55 @@ onMounted(async () => {
   margin-top: 2px;
 }
 
-/* SISA CSS LU TETAP SAMA */
 .wrapper { background: #0f172a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
 .phone { width: 390px; height: 780px; background: #f8fafc; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
-.topbar { padding: 20px; background: white; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #e2e8f0; }
+.topbar { 
+  margin-top: 25px;
+  padding: 15px; 
+  background: #f3f3f3; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  border-bottom: 1px solid lightgray;
+}
 .topbar span { font-size: 24px; cursor: pointer; color: #0f172a; }
 .topbar h3 { font-weight: 700; font-size: 18px; color: #0f172a; margin: 0; }
 .content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
-.tabs { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; }
-.tabs button { flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; background: transparent; transition: 0.3s; }
-.tabs button.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #dc2626; }
+.tabs { 
+  position: relative;
+  display: flex; 
+  background: #e2e8f0; 
+  padding: 4px; 
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tabs::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px;
+  width: calc((100% - 8px)/3);
+  height: calc(100% - 8px);
+  background: white;
+  border-radius: 8px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+.tabs.hadir::before { transform: translateX(100%); }
+.tabs.tidak::before { transform: translateX(200%); }
+.tabs button { 
+  flex: 1; 
+  padding: 8px 0; 
+  border: none; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  font-size: 13px; 
+  cursor: pointer; 
+  background: transparent; 
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.tabs button.active { color: #dc2626; }
 .list-container { display: flex; flex-direction: column; gap: 12px; }
 .history-card { background: white; padding: 12px; border-radius: 16px; display: flex; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 .matkul { font-weight: 700; font-size: 14px; margin-bottom: 2px; }

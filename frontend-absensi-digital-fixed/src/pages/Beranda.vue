@@ -15,7 +15,7 @@
       <!-- AREA KONTEN (TEMA MERAH) -->
       <div class="red">
         <!-- Nama user dinamis dari database Azure -->
-        <h2 class="title">Halo, {{ user.nama || 'Mahasiswa' }}</h2>
+        <h2 class="title">Halo,<br> {{ user.nama || 'Mahasiswa' }}</h2>
 
         <!-- KARTU ABSENSI HARI INI -->
         <div class="card">

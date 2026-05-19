@@ -160,9 +160,19 @@ onUnmounted(() => {
 .phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .back { font-size: 22px; cursor: pointer; color: #000; }
 /* TOPBAR */
-.topbar { margin-top: 25px; padding: 15px; background: #f3f3f3; display: flex; align-items: center; gap: 10px; }
+.topbar { 
+  margin-top: 25px; 
+  padding: 15px; 
+  background: #f3f3f3; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; }
 .topbar span { font-size: 20px; cursor: pointer; }
-.topbar h3 { font-weight: bold; color: black; font-size: 18px; margin: 0; }
+.topbar h3 { 
+  font-weight: bold; 
+  color: black; 
+  font-size: 18px; 
+  margin: 0; }
 /* RED AREA */
 .red { background: #ff2d2d; padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
 /* CARD */

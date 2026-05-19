@@ -25,12 +25,11 @@
         </div>
 
         <button @click="login">LOGIN</button>
-
-        <button style="width: 60%;" @click="goToRole">
-          Back to Role Selection
+        <button @click="goToRole" style="border: 1px solid #ea3236; background: white; color: #ea3236;">
+          BACK TO ROLE SELECTION 
         </button>
+        
       </div>
-
     </div>
   </div>
 </template>
@@ -39,7 +38,7 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo-telkom.png'
 
 const email = ref('')
 const password = ref('')
@@ -95,6 +94,7 @@ const login = async () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 .wrapper {
   background: #0f172a;
   min-height: 100vh;
@@ -187,14 +187,20 @@ const login = async () => {
 }
 
 button {
-  width: 100%;
-  padding: 14px;
-  background: #2f80ed;
+  display: block;
+  width: 60%;
+  padding: 10px;
+  margin-bottom: 15px;
+  margin: 0 auto 15px auto;
+  box-shadow: #999 1px 3px 8px;
+  background: #ea3236;
   color: white;
   border: none;
   border-radius: 12px;
-  font-weight: bold;
   cursor: pointer;
-  margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  
 }
 </style>

@@ -111,16 +111,18 @@ const takePhoto = () => {
 
 /* --- TAMPILAN HEADER --- */
 .header {
-  display: flex;
+  margin-top: 25px;
+  padding: 15px;
+  background: #f3f3f3;
   align-items: center;
-  padding: 18px;
-  background: #f5f5f5;
+  display: flex;
+  gap: 10px;
 }
 
 .header h3 {
-  margin-left: 10px;
+  margin: 0;
+  font-weight: bold;
   font-size: 18px;
-  font-weight: 700;
   color: #000;
 }
 
@@ -145,30 +147,31 @@ video {
 
 .frame {
   position: absolute;
-  top: 20%;
+  top: 18%;
   left: 10%;
   width: 80%;
-  height: 40%;
+  height: 60%;
   border: 3px solid white;
   border-radius: 10px;
 }
 
 .hint {
   position: absolute;
-  bottom: 120px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255,255,255,0.9);
   padding: 10px 18px;
   border-radius: 20px;
   font-size: 14px;
+  color:gray;
   white-space: nowrap;
   text-align: center;
 }
 
 /* --- KONTROL TOMBOL --- */
 .bottom {
-  padding: 20px;
+  padding: 30px;
   display: flex;
   justify-content: center;
 }
@@ -177,7 +180,7 @@ video {
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  background: #e0e0e0;
+  background: lightgray;
   border: 6px solid #ccc;
   cursor: pointer;
 }

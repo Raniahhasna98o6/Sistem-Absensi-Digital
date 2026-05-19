@@ -35,9 +35,11 @@
           </div>
         </div>
 
-        <button :disabled="!role" @click="goToLogin">
-          Continue
-        </button>
+        <div class="container">
+          <button :disabled="!role" @click="goToLogin">
+            CONTINUE
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -46,7 +48,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo-telkom.png'
 import lecturer from '../assets/ph--chalkboard-teacher-duotone.svg'
 import student from '../assets/ph--student-duotone.svg'
 
@@ -129,7 +131,6 @@ const goToLogin = () => {
   margin-top: 15px;
   margin-bottom: -25px;
 }
-
 .logo {
   width: 75px;
 }
@@ -158,7 +159,7 @@ const goToLogin = () => {
 }
 .card.selected {
   background: lightcyan;
-  border: 1px solid #ea3236;
+  border: 1px solid cadetblue;
 }
 .card-icon {
   width: 50px;
@@ -181,15 +182,25 @@ const goToLogin = () => {
   margin: 0;
 }
 
+.container {
+  display: flex;
+  justify-content: center;
+}
+
 button {
   margin-top: 15px;
-  padding: 14px;
+  padding: 10px;
   border: none;
   border-radius: 12px;
   background: #ea3236;
+  box-shadow: #999 1px 3px 8px;
   color: white;
   font-weight: bold;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  transition: 0.15s;
+  width: 50%;
 }
 
 button:disabled {
