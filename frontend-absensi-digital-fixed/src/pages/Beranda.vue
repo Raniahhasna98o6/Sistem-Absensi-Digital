@@ -212,12 +212,13 @@ button {
 
 .menu {
   display: flex;
-  gap: 12px;
+  gap: 5px;
   margin-top: 10px;
+  justify-content: center;
 }
 
 .menu-card {
-  flex: 1;
+  width: 120px;
   background: white;
   color: black;
   padding: 20px;

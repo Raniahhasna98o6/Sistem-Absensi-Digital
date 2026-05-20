@@ -165,10 +165,18 @@ onMounted(() => {
 
 <style scoped>
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
-.phone { width: 390px; height: 800px; background: #f8f9fa; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-.header { display: flex; align-items: center; gap: 15px; padding: 20px; background: white; border-bottom: 1px solid #eee; }
+.phone { width: 390px; height: 780px; background: #f8f9fa; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.header { 
+  margin-top: 25px;
+  padding: 15px;
+  background: #f3f3f3;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid lightgray; 
+}
 .header h3 { font-weight: 700; color: #1e293b; margin: 0; font-size: 18px; }
-.back-btn { font-size: 24px; cursor: pointer; color: #64748b; font-weight: bold; }
+.back-btn { font-size: 24px; cursor: pointer; color: black; font-weight: bold; }
 .content { padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
 
 .filter { display: flex; gap: 10px; }

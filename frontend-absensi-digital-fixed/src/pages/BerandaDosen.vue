@@ -3,7 +3,7 @@
     <div class="phone">
 
       <div class="header">
-        <div class="user-icon">👤</div>
+        <img src="https://i.pravatar.cc/100" width="40" style="border-radius: 50%;" />
         <h3 class="beranda">Beranda Dosen</h3>
       </div>
 
@@ -141,7 +141,15 @@ onMounted(() => {
 <style scoped>
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
 .phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
-.header { display: flex; align-items: center; gap: 10px; padding: 15px; background: #f3f3f3; }
+.header { 
+  margin-top: 25px;
+  padding: 15px;
+  background: #f3f3f3;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid lightgray;
+}
 .beranda { color: black; font-weight: 700; margin: 0; }
 .red { background: #ea3236; padding: 20px; flex: 1; color: white; display: flex; flex-direction: column;}
 .title { font-size: 24px; font-weight:400; margin-bottom: 15px; text-align: left; }
