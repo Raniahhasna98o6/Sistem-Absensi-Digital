@@ -3,8 +3,6 @@
     <div class="phone">
       <div class="header">
         <h1>Sistem Absensi Digital</h1>
-        <p>Please select your role to continue</p>
-        <p style="font-size: smaller;">Use the format below on your email</p>
       </div>
 
       <!-- LOGO SEKSI -->
@@ -13,6 +11,17 @@
       </div>
       
       <div class="content">
+        <div class="card-text">
+          <div class="information">
+            <div class="icon-wrapper">
+              <img :src="alert" class="card-icon" width="40" height="40"/>
+            </div>
+            <div class="head-text-group">
+              <p>Please select your role to continue</p>
+              <p>Use the format below on your email</p>
+            </div>
+          </div>
+        </div>
         <!-- SELEKSI DOSEN -->
         <div class="card" :class="{ 'selected': role === 'lecturer' }" @click="selectRole('lecturer')">
           <div class="icon-wrapper">
@@ -51,6 +60,7 @@ import { useRouter } from 'vue-router'
 import logo from '../assets/logo-telkom.png'
 import lecturer from '../assets/ph--chalkboard-teacher-duotone.svg'
 import student from '../assets/ph--student-duotone.svg'
+import alert from '../assets/fluent-color--alert-urgent-24.svg'
 
 const router = useRouter()
 const role = ref(null)
@@ -105,14 +115,14 @@ const goToLogin = () => {
   color: white;
   text-align: center;
   font-family: 'Poppins', sans-serif;
-  padding: 45px 20px 40px;
+  padding: 50px 20px 35px;
   border-bottom-left-radius: 50% 25%;
   border-bottom-right-radius: 50% 25%;
 }
 .header h1 {
   margin: 0;
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: 1px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.95);
@@ -128,11 +138,30 @@ const goToLogin = () => {
 .logo-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: -15px;
   margin-bottom: -25px;
 }
 .logo {
   width: 75px;
+  background-color: white;
+  border-radius: 15% 15% 90% 90%;
+  border: 5px solid white;
+}
+
+.information {
+  align-items: center;
+  margin: 0 10px;
+  justify-content: space-evenly;
+  display: flex;
+  gap: 15px;
+  color: #333;
+  font-family: 'Poppins', sans-serif; 
+}
+.head-text-group {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: left;
+  font-size: 13px;
 }
 
 /* --- KARTU ROLE & TOMBOL --- */
@@ -142,6 +171,15 @@ const goToLogin = () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+
+.card-text {
+  display: flex;
+  border: 1px solid #ea3236;
+  border-radius: 18px;
+  margin: 10px 0 10px;
+  align-items: center;
+  width: 99.5%;
 }
 
 .card {
@@ -180,6 +218,11 @@ const goToLogin = () => {
 }
 .text-group h2 {
   margin: 0;
+}
+.text-group p {
+  margin: 4px 0 0;
+  color: #555;
+  font-size: 16px;
 }
 
 .container {
