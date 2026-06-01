@@ -157,7 +157,6 @@ onUnmounted(() => {
 /* BACKGROUND */
 .wrapper { background: #0f172a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
 /* PHONE */
-.phone { width: 390px; height: 780px; background: #f3f3f3; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .back { font-size: 22px; cursor: pointer; color: #000; }
 /* TOPBAR */
 .topbar { 
@@ -219,5 +218,5 @@ onUnmounted(() => {
 /* BUTTON */
 button { width: 100%; padding: 14px; background: #2f80ed; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
 /* BOTTOM */
-.bottom { height: 25px; background: #f3f3f3; }
+.bottom { height: 35px; background: #f3f3f3; }
 </style>

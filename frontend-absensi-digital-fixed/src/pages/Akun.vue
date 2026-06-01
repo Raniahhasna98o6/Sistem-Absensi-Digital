@@ -43,7 +43,7 @@
 
           <div class="row">
             <span>Email</span>
-            <span>{{ user.email }}</span>
+            <span style="text-align: right; max-width: 170px; display: block; overflow-wrap: break-word; word-break: break-word;">{{ user.email }}</span>
           </div>
 
           <div class="divider"></div>
@@ -146,12 +146,17 @@ onMounted(async () => {
 <style scoped>
 /* BACKGROUND */
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-/* PHONE */
-.phone { width: 390px; height: 780px; background: #f6f6f6; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 /* HEADER */
-.header { display: flex; align-items: center; gap: 10px; padding: 16px; background: #ffffff; }
-.header h3 { font-weight: 700; font-size: 18px; color: black; }
-.back { font-size: 20px; cursor: pointer; }
+.header { 
+  padding: 15px; 
+  background: #f3f3f3; 
+  display: flex; 
+  align-items:end; 
+  gap: 10px;
+  border-bottom: 1px solid lightgray;
+}
+.header h3 { font-weight: bold; font-size: 18px; color: black; margin: 25px 0 0 0; }
+.back { font-size: 20px; cursor: pointer; color: #000; }
 /* CONTENT */
 .content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
 /* FOTO */

@@ -106,14 +106,6 @@ const login = async () => {
   align-items: center;
 }
 
-.phone {
-  width: 390px;
-  min-height: 780px;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-}
-
 .header {
   background: #ea3236;
   color: white;

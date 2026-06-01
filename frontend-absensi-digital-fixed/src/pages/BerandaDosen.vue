@@ -3,7 +3,7 @@
     <div class="phone">
 
       <div class="header">
-        <img src="https://i.pravatar.cc/100" width="40" style="border-radius: 50%;" />
+        <img src="https://i.pravatar.cc/100" width="30" style="border-radius: 50%;" />
         <h3 class="beranda">Beranda Dosen</h3>
       </div>
 
@@ -30,7 +30,7 @@
             </div>
             <div class="row">
               <span>Email</span>
-              <span>{{ user.email }}</span>
+              <span style="text-align: right; max-width: 190px; display: block; overflow-wrap: break-word; word-break: break-word;">{{ user.email }}</span>
             </div>
             <div class="row">
               <span>No HP</span>
@@ -140,17 +140,20 @@ onMounted(() => {
 
 <style scoped>
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 780px; background: white; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+
 .header { 
-  margin-top: 25px;
-  padding: 15px;
-  background: #f3f3f3;
-  align-items: center;
-  display: flex;
+  margin-top: 25px; 
+  padding: 15px; 
+  background: #f3f3f3; 
+  display: flex; 
+  align-items: center; 
   gap: 10px;
-  border-bottom: 1px solid lightgray;
 }
-.beranda { color: black; font-weight: 700; margin: 0; }
+.beranda { 
+  font-weight: bold; 
+  color: black; 
+  font-size: 20px; 
+  margin: 0; }
 .red { background: #ea3236; padding: 20px; flex: 1; color: white; display: flex; flex-direction: column;}
 .title { font-size: 24px; font-weight:400; margin-bottom: 15px; text-align: left; }
 
@@ -168,7 +171,7 @@ onMounted(() => {
 .row span:last-child { font-weight: 700; text-align: right; color: #111; }
 
 .fitur { margin-top: 10px; text-align: left; font-weight: 700; font-size: 16px;}
-.laporan { background: white; color: black; padding: 15px; border-radius: 14px; margin-top: 10px; font-weight: 700; cursor: pointer; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;}
+.laporan { background: white; color: black; padding: 15px; border-radius: 14px; font-weight: 700; cursor: pointer; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;}
 .laporan:active { transform: scale(0.98); }
 
 .logout { margin-top: auto; width: 100%; padding: 15px; border-radius: 14px; border: none; background: white; color: #d32f2f; font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}

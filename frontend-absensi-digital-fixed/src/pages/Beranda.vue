@@ -5,9 +5,7 @@
       <!-- HEADER TOPBAR -->
       <div class="topbar">
         <div class="top-left">
-          <div class="profile">
-            <img src="https://i.pravatar.cc/150?img=12" alt="profile" width="40" style="border-radius: 50%;"/>
-          </div>
+          <img src="https://i.pravatar.cc/150?img=12" alt="profile" width="30" style="border-radius: 50%;"/>
           <h3>Beranda</h3>
         </div>
       </div>
@@ -105,22 +103,14 @@ onMounted(() => {
   align-items: center;
 }
 
-.phone {
-  width: 390px;
-  height: 780px;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
 /* --- STYLE HEADER & TEMA --- */
 .topbar {
-  padding: 25px;
-  background: #f3f3f3;
-  margin-top: 0px;
-  margin-bottom: -15px;
+  margin-top: 25px; 
+  padding: 15px; 
+  background: #f3f3f3; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px;
 }
 
 .top-left {
@@ -130,8 +120,10 @@ onMounted(() => {
 }
 
 .topbar h3 {
-  font-weight: bold;
-  color: black;
+  font-weight: bold; 
+  color: black; 
+  font-size: 20px; 
+  margin: 0;
 }
 
 .icon-user {

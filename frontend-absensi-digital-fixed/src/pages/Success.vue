@@ -52,15 +52,6 @@ const kembali = () => {
   align-items: center;
 }
 
-.phone {
-  width: 390px;
-  height: 800px;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-  display: flex;
-}
-
 /* --- KONTEN TENGAH --- */
 .content {
   flex: 1;

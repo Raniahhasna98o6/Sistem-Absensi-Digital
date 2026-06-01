@@ -144,13 +144,14 @@ const kirim = async () => {
   transform: scaleX(-1);
 }
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 780px; background: #f3f3f3; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .header { margin-top: 25px;
   padding: 15px;
   background: #f3f3f3;
   align-items: center;
   display: flex;
-  gap: 10px; }
+  gap: 10px;
+  border-bottom: 1px solid lightgray;
+}
 .header h3 { margin: 0;
   font-weight: bold;
   font-size: 18px;

@@ -147,7 +147,7 @@ onMounted(async () => {
 }
 
 .wrapper { background: #0f172a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-.phone { width: 390px; height: 780px; background: #f8fafc; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+.phone { width: 390px; min-height:100vh; background: #f8fafc; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
 .topbar { 
   margin-top: 25px;
   padding: 15px; 
@@ -159,7 +159,7 @@ onMounted(async () => {
 }
 .topbar span { font-size: 24px; cursor: pointer; color: #0f172a; }
 .topbar h3 { font-weight: 700; font-size: 18px; color: #0f172a; margin: 0; }
-.content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+.content { flex: 1; padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
 .tabs { 
   position: relative;
   display: flex; 
@@ -194,9 +194,9 @@ onMounted(async () => {
   z-index: 1;
   text-align: center;
 }
-.tabs button.active { color: #dc2626; }
+.tabs button.active { color: #dc2626; min-height: 32px; }
 .list-container { display: flex; flex-direction: column; gap: 12px; }
-.history-card { background: white; padding: 12px; border-radius: 16px; display: flex; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.history-card { background: white; padding: 18px 14px; border-radius: 18px; display: flex; align-items: center; min-height: 86px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); }
 .matkul { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
 .detail { font-size: 11px; color: #64748b; }
 .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }

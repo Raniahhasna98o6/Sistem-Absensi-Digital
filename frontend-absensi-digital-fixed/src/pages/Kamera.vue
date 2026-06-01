@@ -117,6 +117,7 @@ const takePhoto = () => {
   align-items: center;
   display: flex;
   gap: 10px;
+  border-bottom: 1px solid lightgray;
 }
 
 .header h3 {
@@ -163,14 +164,16 @@ video {
   background: rgba(255,255,255,0.9);
   padding: 10px 18px;
   border-radius: 20px;
+  border: 1px solid #ea3236;
   font-size: 14px;
-  color:gray;
+  color: #ea3236;
   white-space: nowrap;
   text-align: center;
 }
 
 /* --- KONTROL TOMBOL --- */
 .bottom {
+  border-top: 1px solid lightgray;
   padding: 30px;
   display: flex;
   justify-content: center;

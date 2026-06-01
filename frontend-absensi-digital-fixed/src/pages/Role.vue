@@ -101,14 +101,6 @@ const goToLogin = () => {
   align-items: center;
 }
 
-.phone {
-  width: 390px;
-  min-height: 780px;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-}
-
 /* --- TAMPILAN HEADER & LOGO --- */
 .header {
   background-color: #ea3236;
@@ -217,7 +209,7 @@ const goToLogin = () => {
 .text-group p {
   margin: 4px 0 0;
   color: #555;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .container {

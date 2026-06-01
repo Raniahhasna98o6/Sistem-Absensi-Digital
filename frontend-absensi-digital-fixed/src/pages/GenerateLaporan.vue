@@ -165,7 +165,6 @@ onMounted(() => {
 
 <style scoped>
 .wrapper { min-height: 100vh; background: #0f1c2e; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
-.phone { width: 390px; height: 780px; background: #f8f9fa; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 .header { 
   margin-top: 25px;
   padding: 15px;
@@ -173,9 +172,9 @@ onMounted(() => {
   align-items: center;
   display: flex;
   gap: 10px;
-  border-bottom: 1px solid lightgray; 
+     
 }
-.header h3 { font-weight: 700; color: #1e293b; margin: 0; font-size: 18px; }
+.header h3 { font-weight: 700; color: black; margin: 0; font-size: 18px; }
 .back-btn { font-size: 24px; cursor: pointer; color: black; font-weight: bold; }
 .content { padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; flex: 1; }
 
@@ -188,7 +187,7 @@ onMounted(() => {
 .btn-generate:active { transform: scale(0.98); }
 
 .summary { display: flex; justify-content: space-between; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; }
-.stat-box { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 30%; }
+.stat-box { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 30%; border: 1px solid lightgray; border-radius: 12px; }
 .stat-label { font-size: 12px; color: #64748b; font-weight: 600; }
 .stat-value { font-size: 20px; font-weight: 800; color: #1e293b; }
 .text-green { color: #10b981; }
