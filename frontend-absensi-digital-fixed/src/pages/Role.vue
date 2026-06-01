@@ -129,11 +129,6 @@ const goToLogin = () => {
   text-shadow: 0 3px 15px rgba(255, 255, 255, 0.2);
   font-family: 'Poppins', sans-serif;
 }
-.header p {
-  margin-top: 6px;
-  font-size: 14px;
-  line-height: 15px;
-}
 
 .logo-wrapper {
   display: flex;

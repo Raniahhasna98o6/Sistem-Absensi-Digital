@@ -5,7 +5,6 @@
       <!-- HEADER LOGIN -->
       <div class="header">
         <h1>Sistem Absensi Digital</h1>
-        <p>Silakan Login ke akun Anda</p>
       </div>
 
       <!-- LOGO APLIKASI -->
@@ -15,6 +14,10 @@
 
       <!-- FORM INPUT & AKSI -->
       <div class="form">
+        <div class="information">
+          <h1>Hi, Welcome to SiAgit</h1>
+          <p>Enter your credentials to log in your account</p>
+        </div>
         <div class="input-group">
           <input type="text" v-model="email" required />
           <label for="email">Email</label>
@@ -116,35 +119,56 @@ const login = async () => {
   color: white;
   text-align: center;
   font-family: 'Poppins', sans-serif;
-  padding: 45px 20px 40px;
+  padding: 50px 20px 35px;
   border-bottom-left-radius: 50% 25%;
   border-bottom-right-radius: 50% 25%;
 }
 .header h1 {
   margin: 0;
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: 1px;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 3px 15px rgba(255, 255, 255, 0.2);
   font-family: 'Poppins', sans-serif;
 }
-.header p {
-  margin-top: 6px;
+
+.information {
+  align-items: left;
+  margin: 15px 0 15px 0;
+  justify-content: left;
+  display: block;
+  gap: 15px;
+  color: lightslategray;
+  font-family: 'Poppins', sans-serif; 
+}
+.information h1 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 10px;
+  font-family: 'Poppins', sans-serif;
+}
+.information p {
   font-size: 14px;
   line-height: 15px;
+  color: #0f172a;
+  margin-bottom: 25px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .logo-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
-  margin-bottom: -10px;
+  margin-top: -15px;
+  margin-bottom: -25px;
 }
-
 .logo {
   width: 75px;
+  background-color: white;
+  border-radius: 15% 15% 90% 90%;
+  border: 5px solid white;
 }
 
 .form {
