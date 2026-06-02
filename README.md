@@ -12,16 +12,16 @@
 ## 📊 Perancangan Sistem
 
 ### DFD Level 0
-![DFD Level 0](DFD/DFD-Lv0-IMPAL.png)
+![DFD Level 0](DFD/DFD-LV0-superfix.drawio.png)
 
 ### DFD Level 1
-![DFD Level 1](DFD/DFD-Lv1-IMPAL.png)
+![DFD Level 1](DFD/DFD-LV1-superfix.drawio.png)
 
 ### ERD
-![ERD](ERD/ERD_revisi_last.jpeg)
+![ERD](ERD/ERD-FIXED.jpeg)
 
 ### CLASS DIAGRAM
-![Class Diagram](CLASS-DIAGRAM/IMPAL-CLASS-DIAGRAM-revisi-last.jpg)
+![Class Diagram](CLASS-DIAGRAM/CLASS-DIAGRAM-FIXED.jpeg)
 
 ---
 
